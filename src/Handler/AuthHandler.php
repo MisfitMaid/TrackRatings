@@ -46,20 +46,20 @@ class AuthHandler extends \HandlerBase
             ]);
             $_SESSION['trTrackmaniaToken'] = $token;
 
-            // get discord and sigil data
-            $discordData = $this->requestDiscordData($token);
+            // get user id/name from nadeo
+            $nadeoData = $this->requestNadeoData($token);
             try {
-                $user = \User::createFromID($this->trs, $discordData['accountId']);
+                $user = \User::createFromID($this->trs, $nadeoData['accountId']);
             } catch (\InvalidArgumentException $e) {
                 // no user, let's make one
                 $user = \User::createNewUser(
                     $this->trs,
-                    $discordData['accountId'],
-                    $discordData['displayName']
+                    $nadeoData['accountId'],
+                    $nadeoData['displayName']
                 );
             }
 
-            $user->displayName = $discordData['displayName'];
+            $user->displayName = $nadeoData['displayName'];
             $user->isMember = true;
             $user->update();
 
@@ -72,21 +72,9 @@ class AuthHandler extends \HandlerBase
     }
 
     /**
-     * 'id' => string '297969955356540929' (length=18)
-     * 'username' => string 'keira' (length=5)
-     * 'avatar' => string 'e0f981cd0358e3adf5c4702dac7cdd75' (length=32)
-     * 'avatar_decoration' => null
-     * 'discriminator' => string '7829' (length=4)
-     * 'public_flags' => int 768
-     * 'flags' => int 768
-     * 'banner' => string 'a_0ef8cbb956f37768e74929dcb1e1f36f' (length=34)
-     * 'banner_color' => null
-     * 'accent_color' => null
-     * 'locale' => string 'en-GB' (length=5)
-     * 'mfa_enabled' => boolean true
-     * 'premium_type' => int 2
+     * https://api.trackmania.com/doc
      */
-    protected function requestDiscordData(AccessToken $token): array
+    protected function requestNadeoData(AccessToken $token): array
     {
         return $this->trs->provider->getResourceOwner($token)->toArray();
     }
