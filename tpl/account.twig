@@ -1,0 +1,53 @@
+{% extends "base.twig" %}
+
+{% block title %}Account Management{% endblock title %}
+
+{% block content %}
+
+    <h1>Account Management</h1>
+    <form method="post" action="/account">
+
+        <div class="formItem">
+            <label>Username</label>
+            <span>{{ trs.user.displayName }}</span>
+        </div>
+        <div class="formItem">
+            <label>Club</label>
+            <span>{{ trs.user.clubTag ?? "None" }}</span>
+        </div>
+        <div class="formItem">
+            <label>TM Login ID</label>
+            <span>{{ trs.user.login ?? "None" }}</span>
+        </div>
+        <div class="formItem">
+            <label>User ID</label>
+            <span>{{ trs.user.id }}</span>
+        </div>
+        <div class="formItem">
+            <label for="locale">Locale</label>
+            <select name="locale" id="locale">
+                {% for k,v in locales %}
+                    <option value="{{ k }}"
+                            {% if trs.user.locale == k %}selected="selected"{% endif %}>{{ v }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="formItem">
+            <label>API Key</label>
+            <span><code>{{ trs.user.apiKey ?? "None" }}</code></span>
+        </div>
+        <div class="formItem">
+            <div class="shim"></div>
+            <span>
+                <small><em>Do not share your API key or expose it on stream, as it will allow anyone to vote using
+                        your account. If needed, <a href="/recyclekey">click here to recycle your key</a>.</em></small>
+            </span>
+        </div>
+
+        <div class="formItem">
+            <div class="shim"></div>
+            <input type="submit" name="submit" id="submit" value="Update Account" />
+        </div>
+    </form>
+
+{% endblock %}

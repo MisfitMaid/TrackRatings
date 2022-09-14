@@ -1,0 +1,311 @@
+/*!
+ * Copyright (c) 2022 Keira Dueck <sylae@calref.net>
+ * Use of this source code is governed by the MIT license, which
+ * can be found in the LICENSE file.
+ */
+
+@use "colors" as c;
+@use "sass:color";
+
+$mobileCutoff: 767.98px;
+
+body, html {
+  margin: 0;
+  font-weight: 400;
+  line-height: 1.45;
+  font-size: 1em;
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  font-family: "Atkinson Hyperlegible", sans-serif;
+  color: c.$primText;
+  background-color: c.$primBG;
+}
+
+main, footer {
+  max-width: 1170px;
+  width: 100%;
+  padding: 0 15px;
+  margin: 2rem auto 0;
+}
+
+.map {
+  flex-grow: 1;
+}
+
+a {
+  border: none;
+  outline: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  color: c.$primLink;
+  font-family: inherit;
+  font-size: inherit;
+
+  &:hover {
+    color: c.$hoverLink;
+  }
+}
+
+h1, h2, h3, h4 {
+  font-weight: inherit;
+}
+
+/* Top navbar stuff */
+nav.navbar {
+  padding: 0.1em 1rem;
+}
+
+nav.navbar a {
+}
+
+nav.navbar a:hover {
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.navbar {
+  padding: 0.1em 1rem;
+  background-color: c.$navbarBG;
+
+  .noChonk {
+    max-width: 1170px;
+    margin: 0 auto;
+  }
+
+  a {
+    text-decoration: none;
+    color: c.$navbarLink;
+
+    &:hover {
+      color: c.$navbarHoverLink;
+    }
+  }
+
+  .site-branding {
+    font-size: x-large;
+    background-image: url("/img/trackRatingLogo.svg");
+    background-size: contain;
+    background-repeat: no-repeat;
+    padding-left: 1.75em;
+    /* not rem */
+  }
+
+  ul, ol {
+    list-style: none;
+    display: inline-flex;
+  }
+
+  li {
+    vertical-align: middle;
+    padding: 0 1rem;
+    height: 100%;
+
+    a {
+      display: block;
+    }
+  }
+
+  .nav-items-user {
+    float: right;
+  }
+}
+
+
+.mapLinkBar img {
+  max-width: 2em;
+  max-height: 2em;
+}
+
+@media (max-width: $mobileCutoff) {
+  .navbar {
+    padding: 1rem;
+
+    ul {
+      display: block;
+    }
+
+    li a {
+      vertical-align: middle;
+      padding: 1rem;
+      height: 100%;
+      margin-left: -2rem;
+    }
+
+    .nav-items-user {
+      float: unset;
+    }
+  }
+
+  .formItem {
+    label, .shim {
+      min-width: 10rem;
+    }
+
+    input, textarea, select {
+      width: 10rem;
+
+      &.short {
+        width: 5rem;
+      }
+    }
+  }
+}
+
+footer {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-around;
+
+  div {
+    min-width: 292.5px;
+  }
+}
+
+.messageBox {
+  padding: 1.5rem;
+  border-width: 1px;
+  border-style: solid;
+  margin: 1rem;
+
+  &.friendly {
+    border-color: c.$friendlyMSGBorder;
+    color: c.$friendlyMSGText;
+    background: c.$friendlyMSGBG;
+  }
+
+  &.error {
+    border-color: c.$errorMSGBorder;
+    color: c.$errorMSGText;
+    background: c.$errorMSGBG;
+  }
+}
+
+/* sortable table thing */
+.sortable {
+  th::after {
+    font-size: 1.2em;
+    color: transparent;
+    content: ' \025B8';
+  }
+
+  th:hover::after {
+    color: inherit;
+    font-size: 1.2em;
+    content: ' \025B8';
+  }
+
+  th.dir-d::after {
+    color: inherit;
+    content: ' \025BE';
+  }
+
+  th.dir-u::after {
+    color: inherit;
+    content: ' \025B4';
+  }
+}
+
+/* breadcrumb */
+.breadcrumb {
+  ol {
+    display: flex;
+    list-style: none;
+  }
+
+  li {
+    padding: 0 0.2rem;
+
+    &:not(:first-child)::before {
+      content: " » ";
+    }
+  }
+}
+
+table {
+  width: 100%;
+  margin-bottom: 1em;
+  text-align: left;
+  border-collapse: collapse;
+
+  th {
+    padding: 0.75em;
+    vertical-align: bottom;
+    border-bottom: 2px solid c.$accent;
+  }
+
+  td {
+    padding: 0.75em;
+    vertical-align: top;
+    border-top: 1px solid c.$accent;
+  }
+}
+
+.formItem {
+  padding: 0.5rem 0;
+
+  label, .shim {
+    min-width: 10rem;
+    display: inline-block;
+    text-align: right;
+    vertical-align: top;
+    padding-right: 0.5rem;
+  }
+
+  textarea {
+    height: 5rem;
+  }
+
+  input, textarea, select {
+    padding: 5px;
+    width: 50rem;
+    max-width: 100%;
+    background-color: #222;
+    color: c.$primText;
+    border: 1px solid c.$accent;
+    box-sizing: content-box;
+
+    &.short {
+      width: 45rem;
+      max-width: calc(100% - 5rem);
+      padding-right: 0;
+      margin-right: 0;
+    }
+
+    &:hover {
+      border-color: color.scale(c.$accent, $lightness: 10%);
+    }
+  }
+
+  input[type=submit] {
+    width: initial;
+    font-size: large;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+  }
+
+  button {
+    margin-left: 0;
+    width: 5rem;
+    padding: 5px 0;
+    box-sizing: content-box;
+    cursor: pointer;
+  }
+
+  input[type=submit], button {
+    color: c.$primText;
+    background-color: c.$buttonBackground;
+    border: 1px solid c.$buttonBorder;
+
+    &:hover {
+      border-color: color.scale(c.$buttonBorder, $lightness: 10%);
+      background-color: color.scale(c.$buttonBackground, $lightness: -10%);
+    }
+  }
+
+}

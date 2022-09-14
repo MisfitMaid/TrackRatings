@@ -1,0 +1,37 @@
+{% extends "base.twig" %}
+
+{% block content %}
+
+    <h1>My Ratings</h1>
+    <table class="sortable">
+        <thead>
+        <tr>
+            <th class="nowrap">Map</th>
+            <th class="nowrap">Author</th>
+            <th class="nowrap">Rating</th>
+            <th class="nowrap">Voted on</th>
+            <th class="nowrap">Links</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in ratings %}
+            <tr>
+                <td>{{ item.map.name }}</td>
+                <td>{{ item.map.authorName }}</td>
+                <td class="nowrap"
+                    data-sort="{{ item.vote }}">{% if item.vote == constant('\Map::VOTE_UP') %}++{% elseif item.vote == constant('\Map::VOTE_DOWN') %}--{% else %}??{% endif %}</td>
+                <td class="nowrap"
+                    data-sort="{{ item.voteTime.timestamp }}">{{ item.voteTime.locale(trs.user.locale).isoFormat("lll") }}
+                    <br /><small><em>{{ item.voteTime.locale(trs.user.locale).longRelativeDiffForHumans(2) }}</em></small>
+                </td>
+                <td class="mapLinkBar">
+                    <a href="https://trackmania.io/#/leaderboard/{{ item.map.id }}"><img src="/img/iconTIO.png"
+                                                                                         alt="Trackmania.io" /></a>
+                    <a href="/maps/{{ item.map.id }}/tmx"><img src="/img/iconTMX.png"
+                                                               alt="TrackmaniaExchange" /></a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

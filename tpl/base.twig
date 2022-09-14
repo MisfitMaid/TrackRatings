@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% if block("title") is defined %}{{ block("title") }} - TrackRatings{% else %}TrackRatings{% endif %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link crossorigin="anonymous" media="all" rel="stylesheet" href="/css/trackratings.css" />
+    <script src="https://tofsjonas.github.io/sortable/sortable.js"></script>
+    <script src="/base.js"></script>
+    <meta property="og:site_name" content="trackratings.misfitmaid.com" />
+    <meta property="og:title"
+          content="{% if block("title") is defined %}{{ block("title") }}{% else %}TrackRatings{% endif %}" />
+    {% if block("description") is defined %}
+        <meta property="og:description" content="{{ block("description") }}" />
+    {% endif %}
+    <meta property="og:image" content="/img/trackRatingLogo.png" />
+    <meta name="theme-color" content="#ffac33" />
+</head>
+
+<body>
+{% block header %}
+    <nav class="navbar">
+        <div class="noChonk">
+			<span class="site-branding">
+				<a href="/">TrackRatings</a>
+			</span>
+            <ul class="nav-items-standard">
+                <!-- <li><a href="/maps">Maps</a></li> SOON:tm: -->
+                {% if trs.user.isLogged %}
+                    <li><a href="/ratings">My Ratings</a></li>
+                {% endif %}
+            </ul>
+            <ul class="nav-items-user">
+                {% if trs.user.isLogged %}
+                    <li>
+                        <a href="/account"><em>{{ trs.user.displayName }}</em></a>
+                    </li>
+                    <li><a href='/logout'>Log out</a></li>
+                {% else %}
+                    <li><a href="/auth">Log in</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+{% endblock %}
+{% block contentOuter %}
+    <main>
+        {% if breadcrumb is defined %}
+            <nav class="breadcrumb">
+                <ol>
+                    {% for a, text in breadcrumb %}
+                        <li><a href="{{ a }}">{{ text }}</a></li>
+                    {% endfor %}
+                </ol>
+            </nav>
+        {% endif %}
+
+        {% if errorMessage is defined %}
+            <div class="messageBox error">
+                <strong>{{ errorMessage.0 }}</strong>: {{ errorMessage.1 }}
+            </div>
+        {% endif %}
+
+        {% if friendlyMessage is defined %}
+            <div class="messageBox friendly">
+                <strong>{{ friendlyMessage.0 }}</strong>: {{ friendlyMessage.1 }}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock content %}
+    </main>
+{% endblock %}
+{% block footer %}
+    <footer>
+        <p><small>Copyright © {{ "now"|date("Y") }} MisfitMaid.<br />
+                <a href="https://github.com/sylae/TrackRatings/issues/new" target="_blank">Report a bug</a> &middot;
+                <a href="https://discord.gg/BdKpuFcYzG" target="_blank">Discord</a> &middot;
+                <a href="https://github.com/sylae/trackratings" target="_blank">GitHub</a> &middot;
+                <a href="https://twitch.tv/MisfitMaid" target="_blank">Twitch</a> &middot;
+                <a href="https://patreon.com/MisfitMaid" target="_blank">Patreon</a> &middot;
+                <a href="https://paypal.me/MisfitMaid" target="_blank">PayPal</a>
+            </small></p>
+    </footer>
+{% endblock %}
+</body>
+
+</html>
