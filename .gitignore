@@ -5,3 +5,4 @@ config.php
 #sass
 /css/*.css
 /css/*.css.map
+openPlanetPlugins.lnk
