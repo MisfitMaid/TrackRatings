@@ -14,6 +14,13 @@
         </tr>
         </thead>
         <tbody>
+        {% if ratings.count() == 0 %}
+            <tr>
+                <td colspan="5">You have no ratings! <a href="https://openplanet.dev/plugin/trackratings"
+                                                        target="_blank">Grab the plugin</a> and start voting!
+                </td>
+            </tr>
+        {% endif %}
         {% for item in ratings %}
             <tr>
                 <td>{{ item.map.name }}</td>
