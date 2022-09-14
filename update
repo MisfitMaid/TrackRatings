@@ -8,4 +8,4 @@
 
 git pull --recurse-submodules
 composer install --no-progress
-sass -c -s compressed css/jukebox.scss css/jukebox.css
+sass -c -s compressed css/trackratings.scss css/trackratings.css
