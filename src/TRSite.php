@@ -116,7 +116,7 @@ class TRSite
 
         if (is_null($user)) {
             if (isset($this->user) && isset($this->user->isLogged) && $this->user->isLogged) {
-                $user = $this->user->id;
+                $user = $this->user;
             }
         }
 
@@ -131,7 +131,7 @@ class TRSite
         ])
             ->setParameter(0, $type, 'string')
             ->setParameter(1, $ip, 'string')
-            ->setParameter(2, $user, 'string')
+            ->setParameter(2, $user->id, 'string')
             ->setParameter(3, $remarks, 'string')
             ->setParameter(4, $ex1, 'integer')
             ->setParameter(5, $ex2, 'integer')
