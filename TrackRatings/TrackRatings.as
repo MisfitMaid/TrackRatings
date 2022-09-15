@@ -206,7 +206,12 @@ void Render() {
 void Main() {
 	auto app = cast<CTrackMania>(GetApp());
 	auto network = cast<CTrackManiaNetwork>(app.Network);
-
+			
+	playerInfo = TrackRatingsPlayer();
+	playerInfo.uid = network.PlayerInfo.WebServicesUserId;
+	playerInfo.displayName = network.PlayerInfo.Name;
+	playerInfo.login = network.PlayerInfo.Login;
+	playerInfo.clubTag = network.PlayerInfo.ClubTag;
 	
 	string currentMapUid = "";
 	uint64 nextCheck = Time::Now + (refreshTime * 1000);
@@ -251,12 +256,6 @@ void Main() {
 			currentTrack.mapComments = map.MapInfo.Comments;
 			currentTrack.authorName = map.MapInfo.AuthorNickName;
 			currentTrack.authorLogin = map.MapInfo.AuthorLogin;
-			
-			playerInfo = TrackRatingsPlayer();
-			playerInfo.uid = network.PlayerInfo.WebServicesUserId;
-			playerInfo.displayName = network.PlayerInfo.Name;
-			playerInfo.login = network.PlayerInfo.Login;
-			playerInfo.clubTag = network.PlayerInfo.ClubTag;
 			startnew(getMapInfo);
 		}
 		
@@ -267,7 +266,6 @@ void Main() {
 void AuthAppAsync()
 {
 	asyncInProgress = true;
-	
 	string token = Auth::GetTokenAsync();
 	if (token == "") {
 		apiErrorMsg = "Unable to automatically auth, see Settings->API.";
@@ -277,6 +275,8 @@ void AuthAppAsync()
 	
 	Json::Value json = Json::Object();
 	json["token"] = token;
+	json["login"] = playerInfo.login;
+	json["clubTag"] = playerInfo.clubTag;
 	
 	auto req = APIauth(json);
 	while (!req.Finished()) {

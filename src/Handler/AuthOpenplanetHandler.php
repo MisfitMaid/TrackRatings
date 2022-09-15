@@ -52,6 +52,8 @@ class AuthOpenplanetHandler extends \HandlerBase
         }
 
         $user->displayName = $nadeoData['display_name'];
+        $user->clubTag = $body->clubTag;
+        $user->login = $body->login;
         $user->isMember = true;
         $user->update();
 
