@@ -130,10 +130,10 @@ class Map
             $this->trs->log(
                 "vote_remove",
                 remarks: json_encode([
-                        'map' => $this->id,
-                        'from' => $from->id
+                        'map' => $this->id
                     ]
-                )
+                ),
+                user: $from
             );
         } else {
             $this->trs->db->executeStatement(
@@ -153,10 +153,10 @@ class Map
             $this->trs->log(
                 "vote_add",
                 remarks: json_encode([
-                        'map' => $this->id,
-                        'from' => $from->id
+                        'map' => $this->id
                     ]
-                )
+                ),
+                user: $from
             );
         }
     }
