@@ -163,4 +163,9 @@ class TRSite
         }
     }
 
+    public function getOpenplanetAuthToken()
+    {
+        return $this->config['openplanetAuth'];
+    }
+
 }

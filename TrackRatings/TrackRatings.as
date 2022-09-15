@@ -43,6 +43,9 @@ uint refreshTime = 30;
 [Setting password hidden category="API Key" name="TrackRatings API" description="Get this at https://trackratings.misfitmaid.com/account. Do not show on stream as it will allow anyone to vote as you!"]
 string apiKey = "";
 
+[Setting hidden category="API Key" name="Phone Home Time" description="We'll automatically try reauthing with Openplanet after this time, just to make sure everything's still good."]
+uint32 phoneHomeTime = 0;
+
 [SettingsTab name="API Key"]
 void RenderSettings()
 {
@@ -208,6 +211,19 @@ void Main() {
 	string currentMapUid = "";
 	uint64 nextCheck = Time::Now + (refreshTime * 1000);
 	
+	if (phoneHomeTime < uint32(Time::Stamp)) {
+		print("PHONE HOME");
+		apiKey = "";
+		phoneHomeTime = Time::Stamp + (86400 * 7);
+	}
+	
+	
+	if (apiKey == "") {
+		startnew(AuthAppAsync);
+	} else {
+		print("API key already installed, not phoning home");
+	}
+	
 	while(true) {
 		auto map = app.RootMap;
 		
@@ -246,6 +262,58 @@ void Main() {
 		
 		sleep(250);
 	}
+}
+
+void AuthAppAsync()
+{
+	asyncInProgress = true;
+	
+	string token = Auth::GetTokenAsync();
+	if (token == "") {
+		apiErrorMsg = "Unable to automatically auth, see Settings->API.";
+		asyncInProgress = false;
+		return;			
+	}
+	
+	Json::Value json = Json::Object();
+	json["token"] = token;
+	
+	auto req = APIauth(json);
+	while (!req.Finished()) {
+		yield();
+	}
+	
+	if(req.ResponseCode() == 200) {
+		try {
+			auto jDat = Json::Parse(req.String());
+			apiKey = jDat["apiKey"];
+			UI::ShowNotification("TrackRatings", "Successfully authenticated with Openplanet!");
+			
+
+			apiErrorMsg = "";
+			asyncInProgress = false;
+			return;
+		} catch {
+			trace(req.String());
+			trace(req.ResponseCode());
+			apiErrorMsg = "Can't parse server response";
+			asyncInProgress = false;
+			return;
+		}
+		
+	}
+
+	try {
+		auto jDat = Json::Parse(req.String());
+		apiErrorMsg = jDat["_error"];
+	} catch {
+		apiErrorMsg = "Unknown error, code " + req.ResponseCode();
+		
+	}
+	trace(req.String());
+	trace(req.ResponseCode());
+	asyncInProgress = false;
+	return;
 }
 
 TrackRating trDat;
@@ -477,6 +545,11 @@ Net::HttpRequest@ APIvote(Json::Value json)
 Net::HttpRequest@ APIstate(Json::Value json)
 {
 	auto ret = Net::HttpPost("https://trackratings.misfitmaid.com/api/mapinfo", Json::Write(json), "application/json");
+	return ret;
+}
+Net::HttpRequest@ APIauth(Json::Value json)
+{
+	auto ret = Net::HttpPost("http://localhost:8000/auth/openplanet", Json::Write(json), "application/json");
 	return ret;
 }
 

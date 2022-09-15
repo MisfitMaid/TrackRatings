@@ -2,5 +2,8 @@
 name = "TrackRatings"
 author = "MisfitMaid"
 category = "Race"
-version = "0.1"
+version = "0.2"
 siteid = 247
+
+[script]
+dependencies = [ "Auth" ]
