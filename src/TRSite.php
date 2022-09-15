@@ -117,8 +117,6 @@ class TRSite
         if (is_null($user)) {
             if (isset($this->user) && isset($this->user->isLogged) && $this->user->isLogged) {
                 $user = $this->user->id;
-            } else {
-                $user = null;
             }
         }
 
