@@ -11,7 +11,6 @@ class TrackRatingsTrack {
 	string authorName;
 	string authorLogin;
 	
-	
 	Json::Value jsonEncode()
 	{
 		Json::Value json = Json::Object();

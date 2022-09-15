@@ -29,124 +29,17 @@ void OnKeyPress(bool down, VirtualKey key)
 }
 
 void RenderMenu() {
-	if(UI::MenuItem("\\$db4" + Icons::Circle + "\\$z Track Ratings", "", windowVisible)) {
+	if(UI::MenuItem("\\$db4" + Icons::StarHalfO + "\\$z Track Ratings", "", windowVisible)) {
 		windowVisible = !windowVisible;
 	}
 }
 
-void Render() {
-	auto app = cast<CTrackMania>(GetApp());
-	auto map = app.RootMap;
-	
-	if(!UI::IsGameUIVisible()) {
-		return;
-	}
-	
-	if(windowVisible && map !is null && map.MapInfo.MapUid != "" && app.Editor is null) {
-		if(lockPosition) {
-			UI::SetNextWindowPos(int(anchor.x), int(anchor.y), UI::Cond::Always);
-		} else {
-			UI::SetNextWindowPos(int(anchor.x), int(anchor.y), UI::Cond::FirstUseEver);
-		}
-		
-		int windowFlags = UI::WindowFlags::NoCollapse | UI::WindowFlags::AlwaysAutoResize | UI::WindowFlags::NoDocking;
-		if (!UI::IsOverlayShown()) {
-				windowFlags |= UI::WindowFlags::NoInputs;
-		}
-		
-		string icon;
-		if (asyncInProgress) {
-			icon = Icons::Download;
-		} else {
-			icon = Icons::StarHalfO;
-		}
-		UI::Begin(icon + " TrackRatings (beta)", windowFlags);
-		
-		if(!lockPosition) {
-			anchor = UI::GetWindowPos();
-		}
-		
-		UI::BeginGroup();
-		if(displayMapName && UI::BeginTable("header", 1, UI::TableFlags::SizingFixedFit)) {
-			UI::TableNextRow();
-			UI::TableNextColumn();
-			UI::Text(StripFormatCodes(map.MapInfo.Name));
-			UI::TableNextRow();
-			UI::TableNextColumn();
-			UI::Text("by " + StripFormatCodes(map.MapInfo.AuthorNickName));
-			UI::EndTable();
-		}
-		if(UI::BeginTable("table", 3, UI::TableFlags::SizingFixedFit)) {
-			UI::TableNextRow();
-			UI::TableNextColumn();
-			if (trDat.yourVote == "--") {
-				if (UI::RedButton(Icons::Minus+Icons::Minus)) { startnew(VoteDown);  }
-			} else {
-				if (UI::Button(Icons::Minus+Icons::Minus)) { startnew(VoteDown);  }
-			}
-			UI::TableNextColumn();
-			if (trDat.yourVote == "O") {
-				if (UI::OrangeButton("Abstain")) { startnew(VoteCentrist); }
-			} else {
-				if (UI::Button("Abstain")) { startnew(VoteCentrist); }
-			}
-			UI::TableNextColumn();
-			if (trDat.yourVote == "++") {
-				if (UI::GreenButton(Icons::Plus+Icons::Plus)) { startnew(VoteUp); }
-			} else {
-				if (UI::Button(Icons::Plus+Icons::Plus)) { startnew(VoteUp); }
-			}
-			
-			if (displayMapCount) {
-				UI::TableNextRow();
-				UI::TableNextColumn();
-				UI::Text(trDat.getDownCount());
-				UI::TableNextColumn();
-				UI::Text(trDat.getRating());
-				UI::TableNextColumn();
-				UI::Text(trDat.getUpCount());
-			}
-			if (displayMapPercent) {
-				UI::TableNextRow();
-				UI::TableNextColumn();
-				UI::Text(trDat.getDownPct());
-				UI::TableNextColumn();
-				if (asyncInProgress) {
-					// UI::Text(Icons::Download);
-				}
-				UI::TableNextColumn();
-				UI::Text(trDat.getUpPct());
-			}
-			UI::EndTable();
-		}
-		
-		if(apiErrorMsg.Length != 0 && UI::BeginTable("error", 1, UI::TableFlags::SizingFixedFit)) {
-			UI::TableNextRow();
-			UI::TableNextColumn();
-			UI::Text(Icons::ExclamationTriangle + " Error");
-			UI::TableNextRow();
-			UI::TableNextColumn();
-			UI::Text(apiErrorMsg);
-			UI::EndTable();
-		}
-		UI::EndGroup();
-		UI::End();
-	}
-}
-
 void Main() {
-	auto app = cast<CTrackMania>(GetApp());
-	auto network = cast<CTrackManiaNetwork>(app.Network);
-			
-	playerInfo = TrackRatingsPlayer();
-	playerInfo.uid = network.PlayerInfo.WebServicesUserId;
-	playerInfo.displayName = network.PlayerInfo.Name;
-	playerInfo.login = network.PlayerInfo.Login;
-	playerInfo.clubTag = network.PlayerInfo.ClubTag;
-	
-	string currentMapUid = "";
+    auto app = cast<CTrackMania>(GetApp());
+
+    playerInfo = TrackRatingsPlayer();
+
 	uint64 nextCheck = Time::Now + (refreshTime * 1000);
-	
 	if (phoneHomeTime < uint32(Time::Stamp)) {
 		print("PHONE HOME");
 		apiKey = "";
@@ -159,7 +52,8 @@ void Main() {
 	} else {
 		print("API key already installed, not phoning home");
 	}
-	
+
+	string currentMapUid = "";
 	while(true) {
 		auto map = app.RootMap;
 		
@@ -170,7 +64,7 @@ void Main() {
 			
 			if (refreshTime > 0 && Time::Now > nextCheck) {
 				nextCheck = Time::Now + (refreshTime * 1000);
-				startnew(getMapInfo);
+				startnew(asyncInfo);
 			}
 			
 		} else if(map is null || map.MapInfo.MapUid == "") {
@@ -187,7 +81,7 @@ void Main() {
 			currentTrack.mapComments = map.MapInfo.Comments;
 			currentTrack.authorName = map.MapInfo.AuthorNickName;
 			currentTrack.authorLogin = map.MapInfo.AuthorLogin;
-			startnew(getMapInfo);
+			startnew(asyncInfo);
 		}
 		
 		sleep(250);
@@ -219,7 +113,6 @@ void AuthAppAsync()
 			auto jDat = Json::Parse(req.String());
 			apiKey = jDat["apiKey"];
 			UI::ShowNotification("TrackRatings", "Successfully authenticated with Openplanet!");
-			
 
 			apiErrorMsg = "";
 			asyncInProgress = false;
@@ -259,10 +152,6 @@ void VoteDown() {
 }
 void VoteCentrist() {
 	asyncVote("O");
-}
-
-void getMapInfo() {
-	asyncInfo();
 }
 
 string apiErrorMsg = "";
@@ -325,11 +214,11 @@ bool asyncVote(const string &in voteChoice) {
 }
 
 // todo: combine with asyncVote to eliminate shared code
-bool asyncInfo() {
+void asyncInfo() {
 	trace("Fetching map rating information...");
 	if (apiKey.Length == 0) {
 		apiErrorMsg = "No API key entered, please go to Settings";
-		return false;
+		return;
 	}
 	
 	Json::Value json = Json::Object();
@@ -357,13 +246,13 @@ bool asyncInfo() {
 
 			apiErrorMsg = "";
 			asyncInProgress = false;
-			return true;
+			return;
 		} catch {
 			trace(req.String());
 			trace(req.ResponseCode());
 			apiErrorMsg = "Can't parse server response";
 			asyncInProgress = false;
-			return false;
+			return;
 		}
 		
 	}
@@ -377,5 +266,5 @@ bool asyncInfo() {
 	trace(req.String());
 	trace(req.ResponseCode());
 	asyncInProgress = false;
-	return false;
+	return;
 }

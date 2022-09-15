@@ -9,6 +9,16 @@ class TrackRatingsPlayer {
 	string displayName;
 	string login;
 	string clubTag;
+
+	TrackRatingsPlayer() {
+        auto app = cast<CTrackMania>(GetApp());
+        auto network = cast<CTrackManiaNetwork>(app.Network);
+
+        uid = network.PlayerInfo.WebServicesUserId;
+        displayName = network.PlayerInfo.Name;
+        login = network.PlayerInfo.Login;
+        clubTag = network.PlayerInfo.ClubTag;
+	}
 	
 	Json::Value jsonEncode()
 	{
