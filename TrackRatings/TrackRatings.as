@@ -549,7 +549,7 @@ Net::HttpRequest@ APIstate(Json::Value json)
 }
 Net::HttpRequest@ APIauth(Json::Value json)
 {
-	auto ret = Net::HttpPost("http://localhost:8000/auth/openplanet", Json::Write(json), "application/json");
+	auto ret = Net::HttpPost("https://trackratings.misfitmaid.com/auth/openplanet", Json::Write(json), "application/json");
 	return ret;
 }
 
