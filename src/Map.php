@@ -57,7 +57,7 @@ class Map
         return self::createFromDBRow($trs, $res);
     }
 
-    private static function createFromDBRow(TRSite $trs, array $res): self
+    public static function createFromDBRow(TRSite $trs, array $res): self
     {
         $map = new static($trs);
 

@@ -216,7 +216,7 @@ class User
         $x = new Collection();
         while ($row = $res->fetchAssociative()) {
             $v = [];
-            $v['map'] = Map::createFromID($this->trs, $row['idMap']); // todo: actually use the join'ed data
+            $v['map'] = Map::createFromDBRow($this->trs, $row);
             $v['vote'] = $row['vote'];
             $v['voteTime'] = new Carbon($row['voteTime']);
             $x->set($row['idMap'], $v);
