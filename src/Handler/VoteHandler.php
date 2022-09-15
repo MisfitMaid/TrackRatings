@@ -51,6 +51,9 @@ class VoteHandler extends \HandlerBase
         try {
             $map = \Map::createFromJSONIngest($this->trs, $body->trackInfo, $user);
 
+            // try and get TMX data while we're here
+            $map->fetchTMXid();
+
             // try to vote
             $map->addVote($user, $body->vote);
 

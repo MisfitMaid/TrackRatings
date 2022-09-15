@@ -5,6 +5,8 @@
  * can be found in the LICENSE file.
  */
 
+use GuzzleHttp\Client;
+
 class Map
 {
     public const VOTE_DOWN = 0;
@@ -12,6 +14,7 @@ class Map
     public const VOTE_DELETE = 2;
 
     public string $id;
+    public ?int $idTMX = null;
     public string $name;
     public string $authorLogin;
     public string $authorName;
@@ -62,6 +65,7 @@ class Map
         $map = new static($trs);
 
         $map->id = $res['idMap'];
+        $map->idTMX = $res['idTMX'];
         $map->name = $res['name'];
         $map->authorName = $res['authorName'];
         $map->authorLogin = $res['authorLogin'];
@@ -99,25 +103,6 @@ class Map
         );
 
         return self::createFromID($trs, $id);
-    }
-
-    public function update(): bool
-    {
-        return $this->trs->db->executeStatement(
-            "update maps set name = ?, authorLogin = ?, authorName = ? where idMap = ?",
-            [
-                $this->name,
-                $this->authorLogin,
-                $this->authorName,
-                $this->id
-            ],
-            [
-                "string",
-                "string",
-                "string",
-                "string"
-            ]
-        );
     }
 
     public function addVote(User $from, string $type)
@@ -184,6 +169,7 @@ class Map
         $x->name = $this->name;
         $x->author = $this->authorName;
         $x->authorLogin = $this->authorLogin;
+        $x->tmxID = $this->fetchTMXid();
 
         $total = $this->getVoteTotals();
         $x->vUp = $total['++'];
@@ -194,6 +180,60 @@ class Map
         }
 
         return json_encode($x, JSON_PRETTY_PRINT);
+    }
+
+    public function fetchTMXid(): ?int
+    {
+        if (is_int($this->idTMX)) {
+            return $this->idTMX;
+        } else {
+            // let's try and fetch it
+            try {
+                $client = new Client();
+                $req = $client->get(
+                    "https://trackmania.exchange/api/maps/get_map_info/uid/{$this->id}?format=application/json",
+                    [
+                        'headers' => [
+                            'User-Agent' => 'TrackRatings TMX redirector <trackratings.misfitmaid.com>',
+                            'Accept' => 'application/json',
+                        ]
+                    ]
+                );
+
+                $tID = json_decode($req->getBody())->TrackID ?? null;
+                if (is_int($tID)) {
+                    $this->idTMX = $tID;
+                    $this->update();
+                    return $this->idTMX;
+                } else {
+                    return null;
+                }
+            } catch (\Throwable $e) {
+                // that didn't go well
+                return null;
+            }
+        }
+    }
+
+    public function update(): bool
+    {
+        return $this->trs->db->executeStatement(
+            "update maps set name = ?, idTMX = ?, authorLogin = ?, authorName = ? where idMap = ?",
+            [
+                $this->name,
+                $this->idTMX,
+                $this->authorLogin,
+                $this->authorName,
+                $this->id
+            ],
+            [
+                "string",
+                "integer",
+                "string",
+                "string",
+                "string"
+            ]
+        );
     }
 
     public function getVoteTotals(bool $breakCache = false): array
@@ -239,6 +279,31 @@ class Map
             }
         }
         return "O";
+    }
+
+    public function getTMXScreenshot(): ?string
+    {
+        $base = "https://trackmania.exchange/maps/screenshot_normal/%s";
+
+        $id = $this->fetchTMXid();
+        if (is_int($id)) {
+            return sprintf($base, $id);
+        } else {
+            return null;
+        }
+    }
+
+    public function getTMXLink(): string
+    {
+        $base = "https://trackmania.exchange/tracks/view/%s";
+        $baseNF = "/maps/%s/tmx";
+
+        $id = $this->fetchTMXid();
+        if (is_int($id)) {
+            return sprintf($base, $id);
+        } else {
+            return sprintf($baseNF, $this->id);
+        }
     }
 
 }

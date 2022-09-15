@@ -55,6 +55,9 @@ class IngameMapInfoHandler extends \HandlerBase
         try {
             $map = \Map::createFromJSONIngest($this->trs, $body->trackInfo, $user);
 
+            // try and get TMX data while we're here
+            $map->fetchTMXid();
+
             // return vote totals
             echo $map->getMapSummaryJSON($user);
         } catch (\Throwable $e) {

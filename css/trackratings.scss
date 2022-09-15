@@ -121,6 +121,15 @@ nav.navbar a:hover {
   max-height: 2em;
 }
 
+td.mapScreenshot {
+  margin: 0;
+  padding: 0;
+  background-color: #0f0;
+  background-position: center;
+  background-size: cover;
+  width: 6em;
+}
+
 @media (max-width: $mobileCutoff) {
   .navbar {
     padding: 1rem;
