@@ -341,7 +341,7 @@ class TrackRating {
 	
 	string getRating() {
 		int total = upCount - downCount;
-		if (total == 0) return "No votes";
+		if (upCount + downCount == 0) return "No votes";
 		string prefix = "";
 		if (total > 0) {
 			prefix = "+";
