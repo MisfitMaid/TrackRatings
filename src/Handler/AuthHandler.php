@@ -65,7 +65,7 @@ class AuthHandler extends \HandlerBase
 
             $user->login();
             $user->isLogged = true;
-            $this->trs->log("user_login");
+            $this->trs->log("user_login", user: $user);
             $redirect = $_SESSION['post_auth_redirect'] ?? '/';
             header("Location: $redirect");
         }

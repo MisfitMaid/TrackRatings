@@ -44,6 +44,7 @@ class IngameMapInfoHandler extends \HandlerBase
                 $user->clubTag = $body->playerInfo->clubTag;
                 $user->displayName = $body->playerInfo->displayNameClean;
                 $user->update();
+                $this->trs->log("openplanet_getmapinfo", user: $user);
             } catch (\InvalidArgumentException $e) {
                 // we'll ignore invalid key and treat as guest
                 $user = null;

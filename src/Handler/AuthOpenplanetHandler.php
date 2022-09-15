@@ -55,6 +55,7 @@ class AuthOpenplanetHandler extends \HandlerBase
         $user->isMember = true;
         $user->update();
 
+        $this->trs->log("user_auth_openplanet", user: $user);
         echo json_encode(['apiKey' => $user->apiKey]);
     }
 

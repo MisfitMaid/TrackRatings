@@ -100,18 +100,26 @@ class TRSite
         $this->user = User::createFromSession($this);
     }
 
-    public function log(string $type, int $ex1 = null, int $ex2 = null, int $ex3 = null, string $remarks = null): int
-    {
+    public function log(
+        string $type,
+        int $ex1 = null,
+        int $ex2 = null,
+        int $ex3 = null,
+        string $remarks = null,
+        ?User $user = null
+    ): int {
         if (PHP_SAPI == "cli") {
             $ip = inet_pton("::1");
         } else {
             $ip = inet_pton($_SERVER['REMOTE_ADDR']);
         }
 
-        if (isset($this->user) && isset($this->user->isLogged) && $this->user->isLogged) {
-            $user = $this->user->id;
-        } else {
-            $user = null;
+        if (is_null($user)) {
+            if (isset($this->user) && isset($this->user->isLogged) && $this->user->isLogged) {
+                $user = $this->user->id;
+            } else {
+                $user = null;
+            }
         }
 
         $qb = $this->db->createQueryBuilder()->insert("log")->values([

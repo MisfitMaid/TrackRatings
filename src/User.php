@@ -155,6 +155,7 @@ class User
     public function refreshApiKey(): string
     {
         $key = self::generateApiKey();
+        $this->trs->log("user_regenAPI", user: $this);
         $this->apiKey = $key;
         $this->update();
         return $key;

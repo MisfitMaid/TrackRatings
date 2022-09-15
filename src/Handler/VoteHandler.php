@@ -43,6 +43,7 @@ class VoteHandler extends \HandlerBase
             $user->clubTag = $body->playerInfo->clubTag;
             $user->displayName = $body->playerInfo->displayNameClean;
             $user->update();
+            $this->trs->log("openplanet_vote", user: $user);
         } catch (\InvalidArgumentException $e) {
             $this->apiError("Unable to authenticate user, please recycle your API token", 401);
             return;

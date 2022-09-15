@@ -96,10 +96,10 @@ class Map
         $trs->log(
             "map_create",
             remarks: json_encode([
-                    'map' => $id,
-                    'importedBy' => $importingUser->id
+                    'map' => $id
                 ]
-            )
+            ),
+            user: $importingUser
         );
 
         return self::createFromID($trs, $id);
