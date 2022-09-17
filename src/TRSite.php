@@ -131,7 +131,7 @@ class TRSite
         ])
             ->setParameter(0, $type, 'string')
             ->setParameter(1, $ip, 'string')
-            ->setParameter(2, $user->id, 'string')
+            ->setParameter(2, $user->id ?? null, 'string')
             ->setParameter(3, $remarks, 'string')
             ->setParameter(4, $ex1, 'integer')
             ->setParameter(5, $ex2, 'integer')
