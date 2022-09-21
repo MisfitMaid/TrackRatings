@@ -8,5 +8,4 @@ config.php
 
 openPlanetPlugins.lnk
 
-/TrackRatings/*.zip
-/TrackRatings/*.op
+/*.op
