@@ -4,28 +4,33 @@
  * can be found in the LICENSE file.
  */
 
-bool held = false;
+string apiErrorMsg = "";
+bool asyncInProgress = false;
+TrackRating trDat;
+TrackRatingsTrack currentTrack;
+TrackRatingsPlayer playerInfo;
+
+bool keyHeldDown = false;
 void OnKeyPress(bool down, VirtualKey key)
 {
-	if(key == KeyToggleUI && !held)
+	if(key == KeyToggleUI && !keyHeldDown)
 	{
 		windowVisible = !windowVisible;
 	}
-	if(key == KeyUpvote && !held)
+	if(key == KeyUpvote && !keyHeldDown)
 	{
 		startnew(VoteUp);
 	}
-	if(key == KeyDownvote && !held)
+	if(key == KeyDownvote && !keyHeldDown)
 	{
 		startnew(VoteDown);
 	}
-	if(key == KeyCentrist && !held)
+	if(key == KeyCentrist && !keyHeldDown)
 	{
 		startnew(VoteCentrist);
 	}
-	
-	
-	held = down;
+
+	keyHeldDown = down;
 }
 
 void RenderMenu() {
@@ -133,10 +138,6 @@ void AuthAppAsync()
 	return;
 }
 
-TrackRating trDat;
-TrackRatingsTrack currentTrack;
-TrackRatingsPlayer playerInfo;
-
 void VoteUp() {
 	asyncVote("++");
 }
@@ -147,8 +148,6 @@ void VoteCentrist() {
 	asyncVote("O");
 }
 
-string apiErrorMsg = "";
-bool asyncInProgress = false;
 // do i have any fukken idea how to correctly get data out of the async stuff? nope
 
 bool asyncVote(const string &in voteChoice) {
