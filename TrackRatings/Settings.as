@@ -50,15 +50,20 @@ int64 phoneHomeTime = 0;
 void RenderSettings()
 {
 	apiKey = UI::InputText("TrackRatings API key", apiKey, UI::InputTextFlags::AutoSelectAll | UI::InputTextFlags::Password);
+#if DEPENDENCY_AUTH
+	UI::TextWrapped("Note: the Auth plugin is installed, the value above will be automatically provided. Only touch this value if told to.");
+#endif
 	if (UI::Button("Get API Key")) {
 		OpenBrowserURL("https://trackratings.misfitmaid.com/account");
 	}
+#if DEPENDENCY_AUTH
+#else
 	UI::TextWrapped("In order to vote, please grab an API key by pressing the above button. Do not show this key on stream as it will allow anyone to vote as you!");
 	
-	UI::TextWrapped("Why do you need an API key? Without it, it would be trivial to spoof votes to the TrackRatings server, allowing bad actors to impersonate others or spam votes for their own maps. This requirement may change in the future if an Openplanet-based authentication system becomes available.");
+	UI::TextWrapped("Why do you need an API key? Without it, it would be trivial to spoof votes to the TrackRatings server, allowing bad actors to impersonate others or spam votes for their own maps. Openplanet is working on adding support for automating this process, and we will switch to that as soon as it's publicly available.");
 	
 	UI::Separator();
-
+#endif
 	if (UI::Button("Report a Bug / Feature Request")) {
 		OpenBrowserURL("https://github.com/sylae/TrackRatings/issues/new");
 	}	
