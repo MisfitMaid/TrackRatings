@@ -224,4 +224,23 @@ class User
         }
         return $x;
     }
+
+    public function getSessions(): Collection
+    {
+        $res = $this->trs->db->executeQuery(
+            "select * from sessions where idUser = ?",
+            [$this->id], ['string']
+        );
+        $x = new Collection();
+        while ($row = $res->fetchAssociative()) {
+            $v = [];
+            $v['idSession'] = $row['idSession'];
+            $v['ip'] = inet_ntop($row['ip']);
+            $v['updated'] = new Carbon($row['updated']);
+            $v['userAgent'] = $row['userAgent'];
+            $x->set($row['idSession'], $v);
+        }
+        return $x;
+    }
+
 }

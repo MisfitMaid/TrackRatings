@@ -1,0 +1,27 @@
+{% extends "base.twig" %}
+
+{% block content %}
+
+    <h1>My Ratings</h1>
+    <table class="sortable">
+        <thead>
+        <tr>
+            <th class="nowrap">IP</th>
+            <th class="nowrap">User Agent</th>
+            <th class="nowrap">Last Connected</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in sessions %}
+            <tr>
+                <td>{{ item.ip }}</td>
+                <td>{{ item.userAgent }}</td>
+                <td class="nowrap"
+                    data-sort="{{ item.updated.timestamp }}">{{ item.updated.locale(trs.user.locale).isoFormat("lll") }}
+                    <br /><small><em>{{ item.updated.locale(trs.user.locale).longRelativeDiffForHumans(2) }}</em></small>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
