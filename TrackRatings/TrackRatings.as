@@ -40,17 +40,10 @@ void Main() {
     playerInfo = TrackRatingsPlayer();
 
 	uint64 nextCheck = Time::Now + (refreshTime * 1000);
-	if (phoneHomeTime < uint32(Time::Stamp)) {
+	if (apiKey == "" || phoneHomeTime < uint32(Time::Stamp)) {
 		print("PHONE HOME");
-		apiKey = "";
-		phoneHomeTime = Time::Stamp + (86400 * 7);
-	}
-	
-	
-	if (apiKey == "") {
 		startnew(AuthAppAsync);
-	} else {
-		print("API key already installed, not phoning home");
+		phoneHomeTime = Time::Stamp + (86400 * 7);
 	}
 
 	string currentMapUid = "";
