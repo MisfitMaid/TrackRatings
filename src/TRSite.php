@@ -144,7 +144,7 @@ class TRSite
     public function handleRequest()
     {
         $uri = $_SERVER['REQUEST_URI'];
-        $this->log("request", remarks: $uri);
+        // $this->log("request", remarks: $uri);
         $_SESSION['lasthit'] = time();
 
         if (false !== $pos = strpos($uri, '?')) {
