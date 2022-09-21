@@ -32,7 +32,10 @@ class TRSite
         $sessionHandler->setUserIDHandler(function () {
             return $this->user->id ?? null;
         });
-        session_set_save_handler($sessionHandler, true);
+        if (!str_starts_with($_SERVER['HTTP_USER_AGENT'] ?? "", "Openplanet")) {
+            // dont create pointless sessions for openplanet clients
+            session_set_save_handler($sessionHandler, true);
+        }
         session_start([
             'cookie_lifetime' => 86400 * 7,
             'gc_maxlifetime' => 86400 * 7,
