@@ -53,13 +53,16 @@ void Main() {
         }
     }
 
-	uint64 nextCheck = Time::Now + (refreshTime * 1000);
-	if (apiKey == "" || phoneHomeTime < uint32(Time::Stamp)) {
+
+#if DEPENDENCY_AUTH
+	if (apiKey == "" || phoneHomeTime < Time::Stamp) {
 		print("PHONE HOME");
 		startnew(AuthAppAsync);
 		phoneHomeTime = Time::Stamp + (86400 * 7);
 	}
+#endif
 
+	uint64 nextCheck = Time::Now + (refreshTime * 1000);
 	string currentMapUid = "";
 	while(true) {
 		auto map = app.RootMap;
@@ -90,11 +93,11 @@ void Main() {
 			currentTrack.authorLogin = map.MapInfo.AuthorLogin;
 			startnew(asyncInfo);
 		}
-		
-		sleep(250);
+        sleep(250);
 	}
 }
 
+#if DEPENDENCY_AUTH
 void AuthAppAsync()
 {
 	asyncInProgress = true;
@@ -146,6 +149,7 @@ void AuthAppAsync()
 	asyncInProgress = false;
 	return;
 }
+#endif
 
 void VoteUp() {
 	asyncVote("++");

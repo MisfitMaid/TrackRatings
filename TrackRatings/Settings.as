@@ -44,7 +44,7 @@ uint refreshTime = 30;
 string apiKey = "";
 
 [Setting hidden category="API Key" name="Phone Home Time" description="We'll automatically try reauthing with Openplanet after this time, just to make sure everything's still good."]
-uint32 phoneHomeTime = 0;
+int64 phoneHomeTime = 0;
 
 [SettingsTab name="API Key"]
 void RenderSettings()
