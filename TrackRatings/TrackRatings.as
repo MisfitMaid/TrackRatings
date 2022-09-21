@@ -43,6 +43,15 @@ void Main() {
     auto app = cast<CTrackMania>(GetApp());
 
     playerInfo = TrackRatingsPlayer();
+    // wait until we have networking...
+    bool isNetwork = false;
+    while (!isNetwork) {
+        isNetwork = playerInfo.init();
+        if (!isNetwork) {
+            trace("retrying player object in 1 second");
+            sleep(1000);
+        }
+    }
 
 	uint64 nextCheck = Time::Now + (refreshTime * 1000);
 	if (apiKey == "" || phoneHomeTime < uint32(Time::Stamp)) {

@@ -10,14 +10,19 @@ class TrackRatingsPlayer {
 	string login;
 	string clubTag;
 
-	TrackRatingsPlayer() {
-        auto app = cast<CTrackMania>(GetApp());
-        auto network = cast<CTrackManiaNetwork>(app.Network);
+	bool init() {
+            try {
+            auto app = cast<CTrackMania>(GetApp());
+            auto network = cast<CTrackManiaNetwork>(app.Network);
 
-        uid = network.PlayerInfo.WebServicesUserId;
-        displayName = network.PlayerInfo.Name;
-        login = network.PlayerInfo.Login;
-        clubTag = network.PlayerInfo.ClubTag;
+            uid = network.PlayerInfo.WebServicesUserId;
+            displayName = network.PlayerInfo.Name;
+            login = network.PlayerInfo.Login;
+            clubTag = network.PlayerInfo.ClubTag;
+            return true;
+        } catch {
+            return false;
+        }
 	}
 	
 	Json::Value jsonEncode()
