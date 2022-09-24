@@ -9,6 +9,8 @@ bool asyncInProgress = false;
 TrackRating trDat;
 TrackRatingsTrack currentTrack;
 TrackRatingsPlayer playerInfo;
+bool hasCheckedKey = false;
+ServerCommunicator trApi;
 
 bool keyHeldDown = false;
 void OnKeyPress(bool down, VirtualKey key)
@@ -40,6 +42,15 @@ void RenderMenu() {
 }
 
 void Main() {
+    // trApi = ServerCommunicator("https://trackratings.misfitmaid.com", apiKey);
+    trApi = ServerCommunicator("http://localhost:8000", apiKey);
+    if (!hasCheckedKey) {
+        if (!trApi.checkKeyStatus()) {
+            apiKey = "";
+        }
+        hasCheckedKey = true;
+    }
+
     auto app = cast<CTrackMania>(GetApp());
 
     playerInfo = TrackRatingsPlayer();
@@ -56,8 +67,8 @@ void Main() {
 
 #if DEPENDENCY_AUTH
 	if (apiKey == "" || phoneHomeTime < Time::Stamp) {
-		print("PHONE HOME");
-		startnew(AuthAppAsync);
+		apiKey = trApi.fetchAPIKey(playerInfo);
+        trApi = ServerCommunicator("http://localhost:8000", apiKey);
 		phoneHomeTime = Time::Stamp + (86400 * 7);
 	}
 #endif
@@ -74,7 +85,7 @@ void Main() {
 			
 			if (refreshTime > 0 && Time::Now > nextCheck) {
 				nextCheck = Time::Now + (refreshTime * 1000);
-				startnew(asyncInfo);
+			    trApi.getMapInfo(trDat, currentTrack, playerInfo);
 			}
 			
 		} else if(map is null || map.MapInfo.MapUid == "") {
@@ -85,191 +96,25 @@ void Main() {
 		}
 		
 		if (map !is null && (currentTrack is null || currentTrack.uid != currentMapUid)) {
+		    playerInfo.init(); // refresh our player info in case name or club changed
 			currentTrack = TrackRatingsTrack();
 			currentTrack.uid = map.MapInfo.MapUid;
 			currentTrack.mapName = map.MapInfo.Name;
 			currentTrack.mapComments = map.MapInfo.Comments;
 			currentTrack.authorName = map.MapInfo.AuthorNickName;
 			currentTrack.authorLogin = map.MapInfo.AuthorLogin;
-			startnew(asyncInfo);
+			trApi.getMapInfo(trDat, currentTrack, playerInfo);
 		}
         sleep(250);
 	}
 }
 
-#if DEPENDENCY_AUTH
-void AuthAppAsync()
-{
-	asyncInProgress = true;
-	string token = Auth::GetTokenAsync();
-	if (token == "") {
-		apiErrorMsg = "Unable to automatically auth, see Settings->API.";
-		asyncInProgress = false;
-		return;			
-	}
-	
-	Json::Value json = Json::Object();
-	json["token"] = token;
-	json["login"] = playerInfo.login;
-	json["clubTag"] = playerInfo.clubTag;
-	
-	auto req = APIauth(json);
-	while (!req.Finished()) {
-		yield();
-	}
-	
-	if(req.ResponseCode() == 200) {
-		try {
-			auto jDat = Json::Parse(req.String());
-			apiKey = jDat["apiKey"];
-			UI::ShowNotification("TrackRatings", "Successfully authenticated with Openplanet!");
-
-			apiErrorMsg = "";
-			asyncInProgress = false;
-			return;
-		} catch {
-			trace(req.String());
-			trace(req.ResponseCode());
-			apiErrorMsg = "Can't parse server response";
-			asyncInProgress = false;
-			return;
-		}
-		
-	}
-
-	try {
-		auto jDat = Json::Parse(req.String());
-		apiErrorMsg = jDat["_error"];
-	} catch {
-		apiErrorMsg = "Unknown error, code " + req.ResponseCode();
-		
-	}
-	trace(req.String());
-	trace(req.ResponseCode());
-	asyncInProgress = false;
-	return;
-}
-#endif
-
 void VoteUp() {
-	asyncVote("++");
+    trApi.vote("++", trDat, currentTrack, playerInfo);
 }
 void VoteDown() {
-	asyncVote("--");
+    trApi.vote("--", trDat, currentTrack, playerInfo);
 }
 void VoteCentrist() {
-	asyncVote("O");
-}
-
-// do i have any fukken idea how to correctly get data out of the async stuff? nope
-
-bool asyncVote(const string &in voteChoice) {
-	trace("Submitting vote...");
-	if (apiKey.Length == 0) {
-		apiErrorMsg = "No API key entered, please go to Settings";
-		return false;
-	}
-	
-	Json::Value json = Json::Object();
-	json["trackInfo"] = currentTrack.jsonEncode();
-	json["playerInfo"] = playerInfo.jsonEncode();
-	json["apiKey"] = apiKey;
-	json["vote"] = voteChoice;
-	
-	asyncInProgress = true;
-	auto req = APIvote(json);
-	while (!req.Finished()) {
-		yield();
-	}
-	
-	if(req.ResponseCode() == 200) {
-		try {
-			auto jDat = Json::Parse(req.String());
-
-			trDat.upCount = jDat["vUp"];
-			trDat.downCount = jDat["vDown"];
-			trDat.yourVote = jDat["myvote"];
-
-			apiErrorMsg = "";
-			asyncInProgress = false;
-			UI::ShowNotification("TrackRatings", "Vote registered");
-			return true;
-		} catch {
-			trace(req.String());
-			trace(req.ResponseCode());
-			apiErrorMsg = "Can't parse server response";
-			asyncInProgress = false;
-			return false;
-		}
-		
-	}
-	
-	
-	try {
-		auto jDat = Json::Parse(req.String());
-		apiErrorMsg = jDat["_error"];
-	} catch {
-		apiErrorMsg = "Unknown error, code " + req.ResponseCode();
-		
-	}
-	trace(req.String());
-	trace(req.ResponseCode());
-	asyncInProgress = false;
-	return false;
-}
-
-// todo: combine with asyncVote to eliminate shared code
-void asyncInfo() {
-	trace("Fetching map rating information...");
-	if (apiKey.Length == 0) {
-		apiErrorMsg = "No API key entered, please go to Settings";
-		return;
-	}
-	
-	Json::Value json = Json::Object();
-	json["trackInfo"] = currentTrack.jsonEncode();
-	json["playerInfo"] = playerInfo.jsonEncode();
-	json["apiKey"] = apiKey;
-	
-	asyncInProgress = true;
-	auto req = APIstate(json);
-	while (!req.Finished()) {
-		yield();
-	}
-	
-	if(req.ResponseCode() == 200) {
-		try {
-			auto jDat = Json::Parse(req.String());
-
-			trDat.upCount = jDat["vUp"];
-			trDat.downCount = jDat["vDown"];
-			try {
-				trDat.yourVote = jDat["myvote"];
-			} catch {
-				trDat.yourVote = "O"; // bad token prolly, ignore since it doesnt matter here
-			}
-
-			apiErrorMsg = "";
-			asyncInProgress = false;
-			return;
-		} catch {
-			trace(req.String());
-			trace(req.ResponseCode());
-			apiErrorMsg = "Can't parse server response";
-			asyncInProgress = false;
-			return;
-		}
-		
-	}
-	
-	try {
-		auto jDat = Json::Parse(req.String());
-		apiErrorMsg = jDat["_error"];
-	} catch {
-		apiErrorMsg = "Unknown error, code " + req.ResponseCode();
-	}
-	trace(req.String());
-	trace(req.ResponseCode());
-	asyncInProgress = false;
-	return;
+    trApi.vote("O", trDat, currentTrack, playerInfo);
 }

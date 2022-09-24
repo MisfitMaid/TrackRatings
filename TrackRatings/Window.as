@@ -26,7 +26,7 @@ void Render() {
 		}
 
 		string icon;
-		if (asyncInProgress) {
+		if (trApi.asyncInProgress) {
 			icon = Icons::Download;
 		} else {
 			icon = Icons::StarHalfO;
@@ -97,7 +97,7 @@ void Render() {
 			UI::Text(Icons::ExclamationTriangle + " Error");
 			UI::TableNextRow();
 			UI::TableNextColumn();
-			UI::Text(apiErrorMsg);
+			UI::Text(trApi.errorMsg);
 			UI::EndTable();
 		}
 		UI::EndGroup();

@@ -8,7 +8,7 @@
 use Carbon\Carbon;
 use CharlotteDunois\Collect\Collection;
 
-class User
+class User implements JsonSerializable
 {
     public ?string $locale;
     public bool $isLogged;
@@ -243,4 +243,14 @@ class User
         return $x;
     }
 
+    public function jsonSerialize(): object
+    {
+        return (object) [
+            'uid' => $this->id,
+            'login' => $this->login,
+            'displayName' => $this->displayName,
+            'club' => $this->clubTag,
+            'locale' => $this->locale,
+        ];
+    }
 }
