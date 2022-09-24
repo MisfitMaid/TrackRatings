@@ -42,8 +42,8 @@ void RenderMenu() {
 }
 
 void Main() {
-    // trApi = ServerCommunicator("https://trackratings.misfitmaid.com", apiKey);
-    trApi = ServerCommunicator("http://localhost:8000", apiKey);
+    trApi = ServerCommunicator("https://trackratings.misfitmaid.com", apiKey);
+    // trApi = ServerCommunicator("http://localhost:8000", apiKey);
     if (!hasCheckedKey) {
         if (!trApi.checkKeyStatus()) {
             apiKey = "";
