@@ -30,7 +30,7 @@
                 <td>{{ item.map.name }}</td>
                 <td>{{ item.map.authorName }}</td>
                 <td class="nowrap">
-                    {{ (item.map.getVoteTotals()["--"] / (item.map.getVoteTotals()["--"]+item.map.getVoteTotals()["++"]))|format_percent_number(locale=trs.user.locale) }}
+                    {{ (item.map.getVoteTotals()["++"] / (item.map.getVoteTotals()["--"]+item.map.getVoteTotals()["++"]))|format_percent_number(locale=trs.user.locale) }}
                     ({{ (item.map.getVoteTotals()["--"]+item.map.getVoteTotals()["++"])|format_number(locale=trs.user.locale) }}
                     votes)
                 </td>
