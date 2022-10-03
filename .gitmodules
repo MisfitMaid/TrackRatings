@@ -1,0 +1,3 @@
+[submodule "external/sentry"]
+	path = external/sentry
+	url = https://github.com/getsentry/sentry-native.git
