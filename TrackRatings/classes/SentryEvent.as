@@ -35,12 +35,6 @@ class SentryEvent {
         event["request"]["method"] = stringifyMethod(req.Method);
         event["request"]["url"] = req.Url;
         event["request"]["data"] = req.Body;
-        event["request"]["headers"] = Json::Object();
-        for( uint n = 0; n < req.ResponseHeaders().GetKeys().Length; n++ ) {
-            string k = req.ResponseHeaders().GetKeys()[n];
-            string v = req.ResponseHeader(k);
-            event["request"]["headers"][k] = v;
-        }
     }
 
     void addMessage(const string &in message) {
@@ -49,7 +43,7 @@ class SentryEvent {
         event["message"]["formatted"] = message;
     }
 
-    void addException(const string &in  value, const string &in  module) {
+    void addException(const string &in value, const string &in module) {
         event["exception"] = Json::Object();
         event["exception"]["type"] = "Exception";
         event["exception"]["value"] = value;
