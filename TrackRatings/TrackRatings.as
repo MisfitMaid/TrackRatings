@@ -42,6 +42,7 @@ void RenderMenu() {
 }
 
 void Main() {
+    loadUITextures();
     trApi = ServerCommunicator("https://trackratings.misfitmaid.com", apiKey);
     // trApi = ServerCommunicator("http://localhost:8000", apiKey);
     if (!hasCheckedKey) {

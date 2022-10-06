@@ -4,6 +4,9 @@
  * can be found in the LICENSE file.
  */
 
+UI::Texture@ barRed;
+UI::Texture@ barYellow;
+UI::Texture@ barGreen;
 
 void Render() {
 	auto app = cast<CTrackMania>(GetApp());
@@ -89,6 +92,29 @@ void Render() {
 				UI::Text(trDat.getUpPct());
 			}
 			UI::EndTable();
+
+            // @todo: figure out how to draw bars directly
+            // ref: https://canary.discord.com/channels/276076890714800129/424967293538402334/1026764135876276244
+			if (displayMapPercentChart) {
+                float barWidth = UI::GetWindowContentRegionWidth() - 10.f; // arbitrarily subtract some to prevent it from becoming thicker every frame
+                if (barWidth > 150) { // failsafe in case it decides to go thicccc
+                    barWidth = 150.f;
+                }
+
+                if (trDat.total() == 0) {
+                    UI::Image(barYellow, vec2(barWidth,10));
+                } else {
+                        float w = barWidth * (float(trDat.downCount) / float(trDat.total()));
+                        UI::Image(barRed, vec2(w,10));
+                        UI::SameLine();
+                        w = barWidth * (float(trDat.upCount) / float(trDat.total()));
+                        UI::Image(barGreen, vec2(w,10));
+                    if (trDat.downCount > 0) {
+                    }
+                    if (trDat.upCount > 0) {
+                    }
+                }
+            }
 		}
 
 		if(apiErrorMsg.Length != 0 && UI::BeginTable("error", 1, UI::TableFlags::SizingFixedFit)) {
@@ -103,4 +129,14 @@ void Render() {
 		UI::EndGroup();
 		UI::End();
 	}
+}
+
+void loadUITextures() {
+    IO::FileSource r = IO::FileSource("img/red.png");
+    IO::FileSource y = IO::FileSource("img/yellow.png");
+    IO::FileSource g = IO::FileSource("img/green.png");
+
+    @barRed = UI::LoadTexture(r.Read(r.Size()));
+    @barYellow = UI::LoadTexture(y.Read(y.Size()));
+    @barGreen = UI::LoadTexture(g.Read(g.Size()));
 }
