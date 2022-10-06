@@ -37,10 +37,15 @@ class SentryEvent {
         event["request"]["data"] = req.Body;
     }
 
-    void addMessage(const string &in message) {
+    void addMessage(const string &in message) { string[] x; addMessage(message, x); }
+    void addMessage(const string &in message, string[] &in data) {
         trace(Json::Write(event));
         event["message"] = Json::Object();
-        event["message"]["formatted"] = message;
+        event["message"]["message"] = message;
+        event["message"]["params"] = Json::Array();
+        for (uint i = 0; i < data.Length; i++) {
+            event["message"]["params"].Add(data[i]);
+        }
     }
 
     void addException(const string &in value, const string &in module) {

@@ -45,7 +45,9 @@ class ServerCommunicator {
 			}
         } else {
             auto event = sentry.makeEvent();
-            event.addMessage("Invalid map recieved: "+Json::Write(result));
+            string[] x;
+            x.InsertLast(Json::Write(result));
+            event.addMessage("Invalid map recieved: %s", x);
             event.addRequest(req);
             event.send();
             warn("Map invalid");
@@ -74,7 +76,9 @@ class ServerCommunicator {
 			}
         } else {
             auto event = sentry.makeEvent();
-            event.addMessage("Invalid vote data recieved: "+Json::Write(result));
+            string[] x;
+            x.InsertLast(Json::Write(result));
+            event.addMessage("Invalid vote data recieved: %s", x);
             event.addRequest(req);
             event.send();
             warn("Vote invalid");
@@ -92,7 +96,9 @@ class ServerCommunicator {
             return true;
         } else {
             auto event = sentry.makeEvent();
-            event.addMessage("Bad key: "+Json::Write(result));
+            string[] x;
+            x.InsertLast(Json::Write(result));
+            event.addMessage("Bad key: %s", x);
             event.addRequest(req);
             event.send();
             warn("Key invalid");
