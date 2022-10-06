@@ -32,7 +32,8 @@ class ServerCommunicator {
 	    payload["trackInfo"] = map.jsonEncode();
 
         Json::Value result;
-        if (genericAPIPost("/api/mapinfo", payload, result, false)) {
+        Net::HttpRequest req;
+        if (genericAPIPost("/api/mapinfo", payload, result, req, false)) {
             trace("Fetched map info");
             trace(Json::Write(result));
             data.upCount = result["vUp"];
@@ -43,7 +44,11 @@ class ServerCommunicator {
 				data.yourVote = "O"; // bad token prolly, ignore since it doesnt matter here
 			}
         } else {
-            trace("Map invalid");
+            auto event = sentry.makeEvent();
+            event.addMessage("Invalid map recieved: "+Json::Write(result));
+            event.addRequest(req);
+            event.send();
+            warn("Map invalid");
             trace(Json::Write(result));
             trace(errorMsg);
         }
@@ -56,7 +61,8 @@ class ServerCommunicator {
 	    payload["vote"] = vote;
 
         Json::Value result;
-        if (genericAPIPost("/api/vote", payload, result)) {
+        Net::HttpRequest req;
+        if (genericAPIPost("/api/vote", payload, result, req)) {
             trace("Vote successful");
             trace(Json::Write(result));
             data.upCount = result["vUp"];
@@ -67,7 +73,11 @@ class ServerCommunicator {
 				data.yourVote = "O"; // bad token prolly, ignore since it doesnt matter here
 			}
         } else {
-            trace("Vote invalid");
+            auto event = sentry.makeEvent();
+            event.addMessage("Invalid vote data recieved: "+Json::Write(result));
+            event.addRequest(req);
+            event.send();
+            warn("Vote invalid");
             trace(Json::Write(result));
             trace(errorMsg);
         }
@@ -77,10 +87,15 @@ class ServerCommunicator {
         Json::Value payload = this.baseAPIObject();
 
         Json::Value result;
-        if (genericAPIPost("/api/keystatus", payload, result)) {
+        Net::HttpRequest req;
+        if (genericAPIPost("/api/keystatus", payload, result, req)) {
             return true;
         } else {
-            trace("Key invalid");
+            auto event = sentry.makeEvent();
+            event.addMessage("Bad key: "+Json::Write(result));
+            event.addRequest(req);
+            event.send();
+            warn("Key invalid");
             trace(Json::Write(result));
             trace(errorMsg);
             return false;
@@ -94,6 +109,9 @@ class ServerCommunicator {
         // get a token from the mothership
         string token = Auth::GetTokenAsync();
         if (token == "") {
+            auto event = sentry.makeEvent();
+            event.addMessage("Auth::GetTokenAsync mothership failure");
+            event.send();
             errorMsg = "Unable to automatically auth, see Settings->API.";
             asyncInProgress = false;
             return "";
@@ -105,10 +123,15 @@ class ServerCommunicator {
         json["clubTag"] = player.clubTag;
 
         Json::Value result;
-        if (genericAPIPost("/auth/openplanet", json, result, false)) {
+        Net::HttpRequest req;
+        if (genericAPIPost("/auth/openplanet", json, result, req, false)) {
 			UI::ShowNotification("TrackRatings", "Successfully authenticated with Openplanet!");
             return result["apiKey"];
         } else {
+            auto event = sentry.makeEvent();
+            event.addMessage("Auth::GetTokenAsync trackratings failure");
+            event.addRequest(req);
+            event.send();
             errorMsg = "Unable to automatically auth, see Settings->API.";
             trace(Json::Write(result));
             return "";
@@ -116,14 +139,14 @@ class ServerCommunicator {
     }
 #endif
 
-    bool genericAPIPost(string _endpoint, Json::Value payload, Json::Value &out result, bool requireKey = true) {
+    bool genericAPIPost(string _endpoint, Json::Value payload, Json::Value &out result, Net::HttpRequest@ req, bool requireKey = true) {
         if (requireKey && apiKey.Length == 0) {
             errorMsg = "No API key entered, please go to Settings";
             return false;
         }
 
         asyncInProgress = true;
-        auto req = APIReq(baseURL + _endpoint, payload);
+        @req = APIReq(baseURL + _endpoint, payload);
         while (!req.Finished()) {
             yield();
         }
