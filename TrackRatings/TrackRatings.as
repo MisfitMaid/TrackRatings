@@ -11,6 +11,7 @@ TrackRatingsTrack currentTrack;
 TrackRatingsPlayer playerInfo;
 bool hasCheckedKey = false;
 ServerCommunicator trApi;
+SentryClient sentry;
 
 bool keyHeldDown = false;
 void OnKeyPress(bool down, VirtualKey key)
@@ -42,6 +43,8 @@ void RenderMenu() {
 }
 
 void Main() {
+    sentry = SentryClient();
+
     loadUITextures();
     trApi = ServerCommunicator("https://trackratings.misfitmaid.com", apiKey);
     // trApi = ServerCommunicator("http://localhost:8000", apiKey);
