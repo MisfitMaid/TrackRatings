@@ -10,8 +10,6 @@ require_once __DIR__ . '/config.php';
 
 date_default_timezone_set('UTC');
 
-\Sentry\init($config['sentry']);
-
 foreach (glob(__DIR__ . "/src/Handler/*.php") as $file) {
     require_once($file);
 }

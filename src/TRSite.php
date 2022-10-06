@@ -101,14 +101,6 @@ class TRSite
 
         // load user information
         $this->user = User::createFromSession($this);
-
-        // now that we (probably) have user info, set sentry handler
-        \Sentry\configureScope(function (\Sentry\State\Scope $scope): void {
-            $scope->setUser([
-                'id' => $this->user->login,
-                'username' => $this->user->displayName,
-            ]);
-        });
     }
 
     public function log(
