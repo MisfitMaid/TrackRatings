@@ -76,6 +76,8 @@ class SentryEvent {
 
     Net::HttpRequest@ send()
     {
+        trace("Submitting error to Sentry");
+        trace(Json::Write(event));
         auto ret = Net::HttpPost(getStoreURL(), Json::Write(event), "application/json");
         return ret;
     }
