@@ -45,6 +45,13 @@ class TRSite
             'lazy_write' => false,
         ]);
 
+        \Sentry\configureScope(function (\Sentry\State\Scope $scope): void {
+            $scope->setUser([
+                'id' => $this->user->login,
+                'username' => $this->user->displayName,
+            ]);
+        });
+
         // pipe any errors to DB if possible
         set_exception_handler(function (Throwable $e) {
             $this->log(
