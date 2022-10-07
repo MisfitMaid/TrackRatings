@@ -1,8 +1,8 @@
 [meta]
 name = "TrackRatings"
 author = "MisfitMaid"
-category = "Race"
-version = "0.2"
+category = "Overlay"
+version = "0.3"
 siteid = 247
 
 [script]
