@@ -76,12 +76,16 @@ class SentryEvent {
         return UUID::stringify(UUID::V4::generate());
     }
 
-    Net::HttpRequest@ send()
+    void send()
     {
-        trace("Submitting error to Sentry");
-        trace(Json::Write(event));
-        auto ret = Net::HttpPost(getStoreURL(), Json::Write(event), "application/json");
-        return ret;
+        if (useSentry) {
+            trace("Submitting error to Sentry");
+            trace(Json::Write(event));
+            auto ret = Net::HttpPost(getStoreURL(), Json::Write(event), "application/json");
+        } else {
+            trace("Sentry is disabled, not sending error.");
+            trace(Json::Write(event));
+        }
     }
 
     string getStoreURL() {

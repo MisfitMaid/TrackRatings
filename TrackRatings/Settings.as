@@ -43,6 +43,9 @@ bool displayMapPercentChart = true;
 [Setting category="Developer Settings" name="Print debug spam"]
 bool debugSpam = false;
 
+[Setting category="Developer Settings" name="Report errors to developer" description="If toggled on, this will report certain exceptions and errors to the developer via Sentry.io. The data transmitted can be viewed in the OpenPlanet Log."]
+bool useSentry = false;
+
 [Setting category="Display Settings" name="Vote refresh time" description="How often (in seconds) to poll the TrackRatings server for updated ratings. Set to 0 to only update once the map is loaded and when casting votes." min=0 max=300]
 uint refreshTime = 30;
 
