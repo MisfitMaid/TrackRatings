@@ -178,6 +178,12 @@ class ServerCommunicator {
 
         } catch {
             errorMsg = "JSON parse error, see Openplanet log";
+
+            auto event = sentry.makeEvent();
+            event.addException(getExceptionInfo(), "trackratings.servercommunicator.genericAPI.badJSON");
+            event.addRequest(req);
+            event.send();
+
             if (debugSpam) {
                 trace(req.String());
                 trace(req.ResponseCode());
