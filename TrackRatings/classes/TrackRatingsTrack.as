@@ -23,7 +23,9 @@ class TrackRatingsTrack {
 			json["authorNameClean"] = authorName;
 			json["authorLogin"] = StripFormatCodes(authorLogin);
 		} catch {
-			trace("Error converting map info to JSON for map "+uid);
+		    if (debugSpam) {
+    			trace("Error converting map info to JSON for map "+uid);
+    		}
 		}
 		return json;
 	}

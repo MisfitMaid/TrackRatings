@@ -40,6 +40,9 @@ bool displayMapPercent = true;
 [Setting category="Display Settings" name="Show Vote Chart"]
 bool displayMapPercentChart = true;
 
+[Setting category="Developer Settings" name="Print debug spam"]
+bool debugSpam = false;
+
 [Setting category="Display Settings" name="Vote refresh time" description="How often (in seconds) to poll the TrackRatings server for updated ratings. Set to 0 to only update once the map is loaded and when casting votes." min=0 max=300]
 uint refreshTime = 30;
 

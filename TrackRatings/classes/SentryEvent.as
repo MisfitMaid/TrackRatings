@@ -39,7 +39,9 @@ class SentryEvent {
 
     void addMessage(const string &in message) { string[] x; addMessage(message, x); }
     void addMessage(const string &in message, string[] &in data) {
-        trace(Json::Write(event));
+        if (debugSpam) {
+            trace(Json::Write(event));
+        }
         event["message"] = Json::Object();
         event["message"]["message"] = message;
         event["message"]["params"] = Json::Array();

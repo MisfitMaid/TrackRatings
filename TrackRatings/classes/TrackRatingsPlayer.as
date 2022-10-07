@@ -35,7 +35,9 @@ class TrackRatingsPlayer {
 			json["login"] = login;
 			json["clubTag"] = clubTag;
 		} catch {
-			trace("Error converting player info to JSON for player "+uid);
+		    if (debugSpam) {
+			    trace("Error converting player info to JSON for player "+uid);
+			}
 		}
 		return json;
 	}

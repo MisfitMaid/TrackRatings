@@ -34,8 +34,10 @@ class ServerCommunicator {
         Json::Value result;
         Net::HttpRequest req;
         if (genericAPIPost("/api/mapinfo", payload, result, req, false)) {
-            trace("Fetched map info");
-            trace(Json::Write(result));
+            if (debugSpam) {
+                trace("Fetched map info");
+                trace(Json::Write(result));
+            }
             data.upCount = result["vUp"];
             data.downCount = result["vDown"];
 			try {
@@ -51,8 +53,10 @@ class ServerCommunicator {
             event.addRequest(req);
             event.send();
             warn("Map invalid");
-            trace(Json::Write(result));
-            trace(errorMsg);
+            if (debugSpam) {
+                trace(Json::Write(result));
+                trace(errorMsg);
+            }
         }
     }
 
@@ -65,8 +69,10 @@ class ServerCommunicator {
         Json::Value result;
         Net::HttpRequest req;
         if (genericAPIPost("/api/vote", payload, result, req)) {
-            trace("Vote successful");
-            trace(Json::Write(result));
+            if (debugSpam) {
+                trace("Vote successful");
+                trace(Json::Write(result));
+            }
             data.upCount = result["vUp"];
             data.downCount = result["vDown"];
 			try {
@@ -81,9 +87,11 @@ class ServerCommunicator {
             event.addMessage("Invalid vote data recieved: %s", x);
             event.addRequest(req);
             event.send();
+            if (debugSpam) {
             warn("Vote invalid");
-            trace(Json::Write(result));
-            trace(errorMsg);
+                trace(Json::Write(result));
+                trace(errorMsg);
+            }
         }
     }
 
@@ -102,8 +110,10 @@ class ServerCommunicator {
             event.addRequest(req);
             event.send();
             warn("Key invalid");
-            trace(Json::Write(result));
-            trace(errorMsg);
+            if (debugSpam) {
+                trace(Json::Write(result));
+                trace(errorMsg);
+            }
             return false;
         }
     }
@@ -139,7 +149,9 @@ class ServerCommunicator {
             event.addRequest(req);
             event.send();
             errorMsg = "Unable to automatically auth, see Settings->API.";
-            trace(Json::Write(result));
+            if (debugSpam) {
+                trace(Json::Write(result));
+            }
             return "";
         }
     }
@@ -166,8 +178,10 @@ class ServerCommunicator {
 
         } catch {
             errorMsg = "JSON parse error, see Openplanet log";
-            trace(req.String());
-            trace(req.ResponseCode());
+            if (debugSpam) {
+                trace(req.String());
+                trace(req.ResponseCode());
+            }
             return false;
         }
 
@@ -176,8 +190,11 @@ class ServerCommunicator {
             asyncInProgress = false;
             return true;
         } else {
-            trace(req.String());
-            trace(req.ResponseCode());
+            if (debugSpam) {
+                trace(req.String());
+                trace(req.ResponseCode());
+            }
+
             errorMsg = result["_error"];
             asyncInProgress = false;
             return false;
