@@ -56,7 +56,7 @@ class VoteHandler extends \HandlerBase
             $map->fetchTMXid();
 
             // try to vote
-            $map->addVote($user, $body->vote);
+            $map->addVote($user, $body->vote, $body->pb ?? null);
 
             // return vote totals
             echo $map->getMapSummaryJSON($user);

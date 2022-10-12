@@ -105,7 +105,7 @@ class Map
         return self::createFromID($trs, $id);
     }
 
-    public function addVote(User $from, string $type)
+    public function addVote(User $from, string $type, ?int $PB = null)
     {
         $vT = match ($type) {
             "++" => self::VOTE_UP,
@@ -137,15 +137,17 @@ class Map
             );
         } else {
             $this->trs->db->executeStatement(
-                "replace into votes (idMap, idUser, vote) values (?, ?, ?)",
+                "replace into votes (idMap, idUser, vote, PB) values (?, ?, ?, ?)",
                 [
                     $this->id,
                     $from->id,
-                    $vT
+                    $vT,
+                    $PB
                 ],
                 [
                     'text',
                     'text',
+                    'integer',
                     'integer'
                 ]
             );
@@ -176,7 +178,9 @@ class Map
         $x->vDown = $total['--'];
 
         if (!is_null($from)) {
-            $x->myvote = $this->getUserVote($from);
+            $mv = $this->getUserVote($from);
+            $x->myvote = $mv[0];
+            $x->pb = $mv[1];
         }
 
         return json_encode($x, JSON_PRETTY_PRINT);
@@ -265,7 +269,10 @@ class Map
         return $x;
     }
 
-    public function getUserVote(User $from): string
+    /**
+     * @return array [string (vote), int (PB)]
+     */
+    public function getUserVote(User $from): array
     {
         $sql = "select * from votes where idMap = ? and idUser = ? group by vote ";
         $res = $this->trs->db->executeQuery($sql, [$this->id, $from->id], ['string', 'string']);
@@ -273,12 +280,12 @@ class Map
         if ($row = $res->fetchAssociative()) {
             switch ($row['vote']) {
                 case self::VOTE_UP:
-                    return "++";
+                    return ["++", $row["PB"]];
                 case self::VOTE_DOWN:
-                    return "--";
+                    return ["--", $row["PB"]];
             }
         }
-        return "O";
+        return ["O", null];
     }
 
     public function getTMXScreenshot(): ?string
@@ -303,6 +310,23 @@ class Map
             return sprintf($base, $id);
         } else {
             return sprintf($baseNF, $this->id);
+        }
+    }
+
+    public function formatPB(?int $PB): string
+    {
+        if (is_null($PB)) {
+            return "n/a";
+        }
+
+        $ci = \Carbon\CarbonInterval::milliseconds($PB)->cascade();
+        $str = "";
+        if ($ci->hours > 0) {
+            return substr($ci->format("%H:%I:%S.%F"), 0, -3);
+        } elseif ($ci->minutes > 0) {
+            return substr($ci->format("%I:%S.%F"), 0, -3);
+        } else {
+            return substr($ci->format("%S.%F"), 0, -3);
         }
     }
 

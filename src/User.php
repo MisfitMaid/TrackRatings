@@ -219,6 +219,7 @@ class User implements JsonSerializable
             $v = [];
             $v['map'] = Map::createFromDBRow($this->trs, $row);
             $v['vote'] = $row['vote'];
+            $v['PB'] = $row['PB'];
             $v['voteTime'] = new Carbon($row['voteTime']);
             $x->set($row['idMap'], $v);
         }
@@ -245,7 +246,7 @@ class User implements JsonSerializable
 
     public function jsonSerialize(): object
     {
-        return (object) [
+        return (object)[
             'uid' => $this->id,
             'login' => $this->login,
             'displayName' => $this->displayName,
