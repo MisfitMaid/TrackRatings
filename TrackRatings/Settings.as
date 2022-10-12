@@ -46,6 +46,9 @@ bool debugSpam = false;
 [Setting category="Developer Settings" name="Report errors to developer" description="If toggled on, this will report certain exceptions and errors to the developer via Sentry.io. The data transmitted can be viewed in the OpenPlanet Log."]
 bool useSentry = false;
 
+[Setting category="Developer Settings" name="Report to local API server" description="If toggled, after reloading the plugin will communicate with http://localhost:8000 instead of the normal TrackRatings server. Leave this off if that flew over your head."]
+bool localAPI = false;
+
 [Setting category="Display Settings" name="Vote refresh time" description="How often (in seconds) to poll the TrackRatings server for updated ratings. Set to 0 to only update once the map is loaded and when casting votes." min=0 max=300]
 uint refreshTime = 30;
 

@@ -45,8 +45,15 @@ void RenderMenu() {
 void Main() {
     sentry = SentryClient();
 
+    string apiBase;
+    if (localAPI) {
+        apiBase = "http://localhost:8000";
+    } else {
+        apiBase = "https://trackratings.misfitmaid.com";
+    }
+
     loadUITextures();
-    trApi = ServerCommunicator("https://trackratings.misfitmaid.com", apiKey);
+    trApi = ServerCommunicator(apiBase, apiKey);
     if (!hasCheckedKey) {
         if (!trApi.checkKeyStatus()) {
             apiKey = "";
@@ -74,7 +81,6 @@ void Main() {
 #if DEPENDENCY_AUTH
 	if (apiKey == "" || phoneHomeTime < Time::Stamp) {
 		apiKey = trApi.fetchAPIKey(playerInfo);
-        trApi = ServerCommunicator("http://localhost:8000", apiKey);
 		phoneHomeTime = Time::Stamp + (86400 * 7);
 	}
 #endif
