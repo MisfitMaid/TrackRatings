@@ -67,7 +67,8 @@ class TRSite
                     'refresh_token' => $_SESSION['trTrackmaniaToken']->getRefreshToken()
                 ]);
             }
-        } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
+        } catch (\Throwable $e) {
+            \Sentry\captureException($e);
             unset($_SESSION['trTrackmaniaToken']);
             unset($_SESSION['trLogged']);
             unset($_SESSION['trUser']);
