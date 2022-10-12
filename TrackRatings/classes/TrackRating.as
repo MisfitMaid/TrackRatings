@@ -8,6 +8,8 @@ class TrackRating {
 	int upCount;
 	int downCount;
 	string yourVote;
+
+	int PB;
 	
 	string getUpCount() {
 		return fmt(upCount);

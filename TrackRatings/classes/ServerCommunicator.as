@@ -65,6 +65,7 @@ class ServerCommunicator {
 	    payload["playerInfo"] = player.jsonEncode();
 	    payload["trackInfo"] = map.jsonEncode();
 	    payload["vote"] = vote;
+	    payload["pb"] = trDat.PB;
 
         Json::Value result;
         Net::HttpRequest req;

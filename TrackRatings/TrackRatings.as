@@ -85,7 +85,7 @@ void Main() {
 	    try {
             auto map = app.RootMap;
 
-            if(windowVisible && map !is null && map.MapInfo.MapUid != "" && app.Editor is null) {
+            if(map !is null && map.MapInfo.MapUid != "" && app.Editor is null) {
                 if(currentMapUid != map.MapInfo.MapUid) {
                     currentMapUid = map.MapInfo.MapUid;
                 }
@@ -95,11 +95,28 @@ void Main() {
                     trApi.getMapInfo(trDat, currentTrack, playerInfo);
                 }
 
+                // update our PB - code cribbed from Ultimate Medals plugin
+                trDat.PB = 0;
+                auto network = cast<CTrackManiaNetwork>(app.Network);
+                if(network.ClientManiaAppPlayground !is null) {
+                    auto userMgr = network.ClientManiaAppPlayground.UserMgr;
+                    MwId userId;
+                    if (userMgr.Users.Length > 0) {
+                        userId = userMgr.Users[0].Id;
+                    } else {
+                        userId.Value = uint(-1);
+                    }
+
+                    auto scoreMgr = network.ClientManiaAppPlayground.ScoreMgr;
+                    trDat.PB = scoreMgr.Map_GetRecord_v2(userId, currentTrack.uid, "PersonalBest", "", "TimeAttack", "");
+                }
+
             } else if(map is null || map.MapInfo.MapUid == "") {
                 currentMapUid = "";
                 trDat.upCount = 0;
                 trDat.downCount = 0;
                 trDat.yourVote = "O";
+                trDat.PB = -1;
             }
 
             if (map !is null && (currentTrack is null || currentTrack.uid != currentMapUid)) {
