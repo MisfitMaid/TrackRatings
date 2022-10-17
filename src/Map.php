@@ -28,7 +28,7 @@ class Map
         if ($json->uid == "") {
             throw new InvalidArgumentException("uid cannot be empty");
         }
-        if ($json->mapNameClean) {
+        if ($json->mapNameClean == "") {
             throw new InvalidArgumentException("mapName cannot be empty");
         }
         try {
