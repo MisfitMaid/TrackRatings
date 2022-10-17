@@ -25,6 +25,12 @@ class Map
 
     public static function createFromJSONIngest(TRSite $trs, object $json, ?User $importer): self
     {
+        if ($json->uid == "") {
+            throw new InvalidArgumentException("uid cannot be empty");
+        }
+        if ($json->mapNameClean) {
+            throw new InvalidArgumentException("mapName cannot be empty");
+        }
         try {
             // todo: update from this data
             return self::createFromID($trs, $json->uid);

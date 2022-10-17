@@ -62,6 +62,7 @@ class IngameMapInfoHandler extends \HandlerBase
             // return vote totals
             echo $map->getMapSummaryJSON($user);
         } catch (\Throwable $e) {
+            \Sentry\captureException($e);
             $this->apiError("Unknown map parse error. Please try again", 500, $e->getMessage());
         }
     }
