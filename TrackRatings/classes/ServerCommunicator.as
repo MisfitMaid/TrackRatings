@@ -99,6 +99,11 @@ class ServerCommunicator {
     bool checkKeyStatus() {
         Json::Value payload = this.baseAPIObject();
 
+        if(this.apiKey == "") {
+            trace("null or empty api key");
+            return false;
+        }
+
         Json::Value result;
         Net::HttpRequest req;
         if (genericAPIPost("/api/keystatus", payload, result, req)) {
