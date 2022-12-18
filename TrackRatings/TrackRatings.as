@@ -77,13 +77,10 @@ void Main() {
         }
     }
 
-
-#if DEPENDENCY_AUTH
 	if (apiKey == "" || phoneHomeTime < Time::Stamp) {
 		apiKey = trApi.fetchAPIKey(playerInfo);
 		phoneHomeTime = Time::Stamp + (86400 * 7);
 	}
-#endif
 
 	uint64 nextCheck = Time::Now + (refreshTime * 1000);
 	string currentMapUid = "";

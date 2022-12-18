@@ -119,7 +119,6 @@ class ServerCommunicator {
         }
     }
 
-#if DEPENDENCY_AUTH
     string fetchAPIKey(TrackRatingsPlayer &in player) {
         asyncInProgress = true;
 
@@ -169,7 +168,6 @@ class ServerCommunicator {
             return "";
         }
     }
-#endif
 
     bool genericAPIPost(string _endpoint, Json::Value payload, Json::Value &out result, Net::HttpRequest@ req, bool requireKey = true) {
         if (requireKey && apiKey.Length == 0) {
