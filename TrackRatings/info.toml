@@ -6,4 +6,4 @@ version = "0.3.1"
 siteid = 247
 
 [script]
-optional_dependencies = [ "Auth" ]
+optional_dependencies = []

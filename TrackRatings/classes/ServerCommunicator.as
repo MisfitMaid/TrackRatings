@@ -123,11 +123,24 @@ class ServerCommunicator {
     string fetchAPIKey(TrackRatingsPlayer &in player) {
         asyncInProgress = true;
 
+        if (debugSpam) {
+            trace("getting token from mothership");
+        }
+
         // get a token from the mothership
-        string token = Auth::GetTokenAsync();
+        auto tokenTask = Auth::GetToken();
+        while (!tokenTask.Finished()) {
+            yield();
+        }
+
+        // Get the token
+        string token = tokenTask.Token();
+        if (debugSpam) {
+            trace(token);
+        }
         if (token == "") {
             auto event = sentry.makeEvent();
-            event.addMessage("Auth::GetTokenAsync mothership failure");
+            event.addMessage("Auth::GetToken mothership failure");
             event.send();
             errorMsg = "Unable to automatically auth, see Settings->API.";
             asyncInProgress = false;

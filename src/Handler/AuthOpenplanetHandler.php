@@ -35,8 +35,12 @@ class AuthOpenplanetHandler extends \HandlerBase
         $pluginToken = $body->token;
         $nadeoData = $this->requestOpenplanetVerification($pluginToken);
 
+        if (array_key_exists("error", $nadeoData)) {
+            $this->apiError("Unable to authenticate, please see Settings to do so manually.", 500, "op_error");
+        }
+
         if (!array_key_exists("account_id", $nadeoData) || !array_key_exists("display_name", $nadeoData)) {
-            $this->apiError("Unable to authenticate, please see Settings to do so manually.");
+            $this->apiError("Unable to authenticate, please see Settings to do so manually.", 500, "op_invalid_data");
             die();
         }
 
