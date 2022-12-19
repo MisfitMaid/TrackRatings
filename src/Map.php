@@ -85,7 +85,7 @@ class Map
         string $name,
         string $authorName,
         string $authorLogin,
-        User $importingUser
+        ?User $importingUser = null
     ): self {
         $qb = $trs->db->createQueryBuilder()->insert("maps")->values([
             'idMap' => '?',
