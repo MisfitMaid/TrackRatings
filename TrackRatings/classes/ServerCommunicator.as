@@ -68,6 +68,7 @@ class ServerCommunicator {
                 trace("Vote successful");
                 trace(Json::Write(result));
             }
+			UI::ShowNotification("TrackRatings", "Vote recieved.");
             data.ingestServerVoteData(result);
         } else {
             auto event = sentry.makeEvent();

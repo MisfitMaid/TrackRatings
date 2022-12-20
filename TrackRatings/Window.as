@@ -36,18 +36,28 @@ void Render() {
 			anchor = UI::GetWindowPos();
 		}
 
-		UI::BeginGroup();
-		if(displayMapName && UI::BeginTable("header", 1, UI::TableFlags::SizingFixedFit)) {
-			UI::TableNextRow();
-			UI::TableNextColumn();
+		if(displayMapName) {
+		    UI::BeginGroup();
 			UI::Text(StripFormatCodes(map.MapInfo.Name));
-			UI::TableNextRow();
-			UI::TableNextColumn();
 			UI::Text("by " + StripFormatCodes(map.MapInfo.AuthorNickName));
-			UI::EndTable();
+		    UI::EndGroup();
 		}
 
-		if(UI::BeginTable("table", 4, UI::TableFlags::SizingFixedFit)) {
+		if (displayVoteSummary) {
+		    UI::BeginGroup();
+		    UI::Text(Text::Format("%d", trDat.total()) + " votes");
+		    UI::Text(trDat.getUpPct() + " weighted rating");
+		    UI::EndGroup();
+		}
+
+		uint totalCols = 1;
+		if (displayMapCount) totalCols++;
+		if (displayMapPercent) totalCols++;
+		if (displayMapPercentChart) totalCols++;
+
+
+        UI::BeginGroup();
+		if(UI::BeginTable("table", totalCols, UI::TableFlags::SizingFixedFit)) {
 
             // calc this now for bar graph formatting down below
 		    int biggestVote = 0;
@@ -58,7 +68,8 @@ void Render() {
 			auto monospace = UI::LoadFont("DroidSansMono.ttf");
 
 			vc votechoice;
-			for (uint i = 0; i < trDat.votecounts.Length; i++) {
+			for (uint i = trDat.votecounts.Length-1; int(i) >= 0; i--) {
+			    if (i == prettyToVote("0")) continue;
 			    UI::TableNextRow();
 			    UI::TableNextColumn();
 			    UI::PushFont(monospace);
@@ -74,14 +85,18 @@ void Render() {
 			        if (UI::Button(voteToFixedWidthPretty(i))) { votechoice.choice = i; startnew(castVote, votechoice);  }
 			    }
 			    UI::PopFont();
-    		    UI::TableNextColumn();
-			    UI::Text(trDat.getCountFmt(i));
+    		    if (displayMapCount) {
+        		    UI::TableNextColumn();
+    		        UI::Text(trDat.getCountFmt(i));
+    		    }
 
-			    UI::TableNextColumn();
-			    UI::Text(trDat.getPercentFmt(i));
+			    if (displayMapPercent) {
+			        UI::TableNextColumn();
+			        UI::Text(trDat.getPercentFmt(i));
+			    }
 
-			    UI::TableNextColumn();
 			    if (displayMapPercentChart && trDat.votecounts[i] > 0) {
+			        UI::TableNextColumn();
 			        float barWidth = float(trDat.votecounts[i]) / float(biggestVote) * float(mapPercentChartWidth);
 
                     if (i < prettyToVote("0")) {
@@ -96,6 +111,7 @@ void Render() {
 			}
 			UI::EndTable();
 		}
+		UI::EndGroup();
 
 		if(apiErrorMsg.Length != 0 && UI::BeginTable("error", 1, UI::TableFlags::SizingFixedFit)) {
 			UI::TableNextRow();
@@ -106,7 +122,6 @@ void Render() {
 			UI::Text(trApi.errorMsg);
 			UI::EndTable();
 		}
-		UI::EndGroup();
 		UI::End();
 	}
 }

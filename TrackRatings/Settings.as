@@ -31,6 +31,9 @@ bool lockPosition = false;
 [Setting category="Display Settings" name="Show Map Title/Author"]
 bool displayMapName = true;
 
+[Setting category="Display Settings" name="Show Vote Summary"]
+bool displayVoteSummary = false;
+
 [Setting category="Display Settings" name="Show Vote Counts"]
 bool displayMapCount = true;
 
@@ -40,7 +43,7 @@ bool displayMapPercent = true;
 [Setting category="Display Settings" name="Show Vote Chart"]
 bool displayMapPercentChart = true;
 
-[Setting category="Display Settings" name="Vote Chart Width" min=1]
+[Setting category="Display Settings" name="Vote Chart Width" min=1 max=128]
 uint mapPercentChartWidth = 50;
 
 [Setting category="Developer Settings" name="Print debug spam"]

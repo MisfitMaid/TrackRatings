@@ -149,5 +149,9 @@ class vc {
 }
 
 void castVote(ref@ choice) {
-    trApi.vote(voteToPretty(cast<vc>(choice).choice), trDat, currentTrack, playerInfo);
+    uint x = cast<vc>(choice).choice;
+    if (x == trDat.yourVote) {
+        x = prettyToVote("0"); // choosing a vote u already have makes it an abstain
+    }
+    trApi.vote(voteToPretty(x), trDat, currentTrack, playerInfo);
 }
