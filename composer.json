@@ -6,7 +6,7 @@
     "nesbot/carbon": "^2.62",
     "nikic/fast-route": "^1.3",
     "sentry/sdk": "^3.2",
-    "sylae/collection": "^0.2.0",
+    "sylae/collection": "^0.3.0",
     "sylae/doctrine-dbal-session-handler": "^0.2.0",
     "twig/intl-extra": "^3.4",
     "twig/twig": "^3.4"
