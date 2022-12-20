@@ -50,71 +50,41 @@ void Render() {
 			UI::Text("by " + StripFormatCodes(map.MapInfo.AuthorNickName));
 			UI::EndTable();
 		}
-		if(UI::BeginTable("table", 3, UI::TableFlags::SizingFixedFit)) {
+
+		if(UI::BeginTable("table", trDat.votecounts.Length, UI::TableFlags::SizingFixedFit)) {
 			UI::TableNextRow();
-			UI::TableNextColumn();
-			if (trDat.yourVote == "--") {
-				if (UI::RedButton(Icons::Minus+Icons::Minus)) { startnew(VoteDown);  }
-			} else {
-				if (UI::Button(Icons::Minus+Icons::Minus)) { startnew(VoteDown);  }
-			}
-			UI::TableNextColumn();
-			if (trDat.yourVote == "O") {
-				if (UI::OrangeButton("Abstain")) { startnew(VoteCentrist); }
-			} else {
-				if (UI::Button("Abstain")) { startnew(VoteCentrist); }
-			}
-			UI::TableNextColumn();
-			if (trDat.yourVote == "++") {
-				if (UI::GreenButton(Icons::Plus+Icons::Plus)) { startnew(VoteUp); }
-			} else {
-				if (UI::Button(Icons::Plus+Icons::Plus)) { startnew(VoteUp); }
+
+			vc votechoice;
+			for (uint i = 0; i < trDat.votecounts.Length; i++) {
+			    UI::TableNextColumn();
+			    if (trDat.yourVote == i) {
+			        if (i < prettyToVote("0")) {
+			            if (UI::RedButton(voteToPretty(i))) { votechoice.choice = i; startnew(castVote, votechoice);  }
+			        } else if (i > prettyToVote("0")) {
+			            if (UI::GreenButton(voteToPretty(i))) { votechoice.choice = i; startnew(castVote, votechoice);  }
+			        } else {
+			            if (UI::OrangeButton(voteToPretty(i))) { votechoice.choice = i; startnew(castVote, votechoice);  }
+			        }
+			    } else {
+			        if (UI::Button(voteToPretty(i))) { votechoice.choice = i; startnew(castVote, votechoice);  }
+			    }
 			}
 
 			if (displayMapCount) {
 				UI::TableNextRow();
-				UI::TableNextColumn();
-				UI::Text(trDat.getDownCount());
-				UI::TableNextColumn();
-				UI::Text(trDat.getRating());
-				UI::TableNextColumn();
-				UI::Text(trDat.getUpCount());
+			    for (uint i = 0; i < trDat.votecounts.Length; i++) {
+				    UI::TableNextColumn();
+				    UI::Text(trDat.getCountFmt(i));
+				}
 			}
 			if (displayMapPercent) {
 				UI::TableNextRow();
-				UI::TableNextColumn();
-				UI::Text(trDat.getDownPct());
-				UI::TableNextColumn();
-				if (asyncInProgress) {
-					// UI::Text(Icons::Download);
+			    for (uint i = 0; i < trDat.votecounts.Length; i++) {
+				    UI::TableNextColumn();
+				    UI::Text(trDat.getPercentFmt(i));
 				}
-				UI::TableNextColumn();
-				UI::Text(trDat.getUpPct());
 			}
 			UI::EndTable();
-
-            // @todo: figure out how to draw bars directly
-            // ref: https://canary.discord.com/channels/276076890714800129/424967293538402334/1026764135876276244
-			if (displayMapPercentChart) {
-                float barWidth = UI::GetWindowContentRegionWidth() - 10.f; // arbitrarily subtract some to prevent it from becoming thicker every frame
-                if (barWidth > 150) { // failsafe in case it decides to go thicccc
-                    barWidth = 150.f;
-                }
-
-                if (trDat.total() == 0) {
-                    UI::Image(barYellow, vec2(barWidth,10));
-                } else {
-                        float w = barWidth * (float(trDat.downCount) / float(trDat.total()));
-                        UI::Image(barRed, vec2(w,10));
-                        UI::SameLine();
-                        w = barWidth * (float(trDat.upCount) / float(trDat.total()));
-                        UI::Image(barGreen, vec2(w,10));
-                    if (trDat.downCount > 0) {
-                    }
-                    if (trDat.upCount > 0) {
-                    }
-                }
-            }
 		}
 
 		if(apiErrorMsg.Length != 0 && UI::BeginTable("error", 1, UI::TableFlags::SizingFixedFit)) {

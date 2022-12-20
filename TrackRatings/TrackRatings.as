@@ -16,21 +16,25 @@ SentryClient sentry;
 bool keyHeldDown = false;
 void OnKeyPress(bool down, VirtualKey key)
 {
+    vc votechoice;
 	if(key == KeyToggleUI && !keyHeldDown)
 	{
 		windowVisible = !windowVisible;
 	}
 	if(key == KeyUpvote && !keyHeldDown)
 	{
-		startnew(VoteUp);
+	    votechoice.choice = prettyToVote("++");
+		startnew(castVote, votechoice);
 	}
 	if(key == KeyDownvote && !keyHeldDown)
 	{
-		startnew(VoteDown);
+	    votechoice.choice = prettyToVote("--");
+		startnew(castVote, votechoice);
 	}
 	if(key == KeyCentrist && !keyHeldDown)
 	{
-		startnew(VoteCentrist);
+	    votechoice.choice = prettyToVote("0");
+		startnew(castVote, votechoice);
 	}
 
 	keyHeldDown = down;
@@ -116,9 +120,8 @@ void Main() {
 
             } else if(map is null || map.MapInfo.MapUid == "") {
                 currentMapUid = "";
-                trDat.upCount = 0;
-                trDat.downCount = 0;
-                trDat.yourVote = "O";
+                trDat.wipeCounts();
+                trDat.yourVote = prettyToVote("0");
                 trDat.PB = -1;
             }
 
@@ -141,12 +144,10 @@ void Main() {
 	}
 }
 
-void VoteUp() {
-    trApi.vote("++", trDat, currentTrack, playerInfo);
+class vc {
+    uint choice;
 }
-void VoteDown() {
-    trApi.vote("--", trDat, currentTrack, playerInfo);
-}
-void VoteCentrist() {
-    trApi.vote("O", trDat, currentTrack, playerInfo);
+
+void castVote(ref@ choice) {
+    trApi.vote(voteToPretty(cast<vc>(choice).choice), trDat, currentTrack, playerInfo);
 }

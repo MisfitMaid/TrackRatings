@@ -38,13 +38,7 @@ class ServerCommunicator {
                 trace("Fetched map info");
                 trace(Json::Write(result));
             }
-            data.upCount = result["vUp"];
-            data.downCount = result["vDown"];
-			try {
-				data.yourVote = result["myvote"];
-			} catch {
-				data.yourVote = "O"; // bad token prolly, ignore since it doesnt matter here
-			}
+            data.ingestServerVoteData(result);
         } else {
             auto event = sentry.makeEvent();
             string[] x;
@@ -74,13 +68,7 @@ class ServerCommunicator {
                 trace("Vote successful");
                 trace(Json::Write(result));
             }
-            data.upCount = result["vUp"];
-            data.downCount = result["vDown"];
-			try {
-				data.yourVote = result["myvote"];
-			} catch {
-				data.yourVote = "O"; // bad token prolly, ignore since it doesnt matter here
-			}
+            data.ingestServerVoteData(result);
         } else {
             auto event = sentry.makeEvent();
             string[] x;

@@ -9,9 +9,13 @@ use GuzzleHttp\Client;
 
 class Map
 {
-    public const VOTE_DOWN = 0;
-    public const VOTE_UP = 1;
-    public const VOTE_DELETE = 2;
+    public const VOTE_WORST = 3;
+    public const VOTE_WORSE = 0;
+    public const VOTE_BAD = 4;
+    public const VOTE_CENTRIST = 2;
+    public const VOTE_GOOD = 5;
+    public const VOTE_BETTER = 1;
+    public const VOTE_BEST = 6;
 
     public string $id;
     public ?int $idTMX = null;
@@ -113,18 +117,9 @@ class Map
 
     public function addVote(User $from, string $type, ?int $PB = null)
     {
-        $vT = match ($type) {
-            "++" => self::VOTE_UP,
-            "--" => self::VOTE_DOWN,
-            "O" => self::VOTE_DELETE,
-            default => "no",
-        };
+        $vT = $this->prettyToConst($type);
 
-        if ($vT == "no") {
-            throw new InvalidArgumentException("Unknown vote type");
-        }
-
-        if ($vT == self::VOTE_DELETE) {
+        if ($vT == self::VOTE_CENTRIST) {
             $qb = $this->trs->db->createQueryBuilder();
             $qb->delete("votes")
                 ->where('idMap = ?')
@@ -169,6 +164,19 @@ class Map
         }
     }
 
+    public function prettyToConst(string $type): int
+    {
+        return match ($type) {
+            "---" => self::VOTE_WORST,
+            "--" => self::VOTE_WORSE,
+            "-" => self::VOTE_BAD,
+            default => self::VOTE_CENTRIST,
+            "+" => self::VOTE_GOOD,
+            "++" => self::VOTE_BETTER,
+            "+++" => self::VOTE_BEST,
+        };
+    }
+
     public function getMapSummaryJSON(?User $from): string
     {
         $x = (object)[];
@@ -179,9 +187,7 @@ class Map
         $x->authorLogin = $this->authorLogin;
         $x->tmxID = $this->fetchTMXid();
 
-        $total = $this->getVoteTotals();
-        $x->vUp = $total['++'];
-        $x->vDown = $total['--'];
+        $x->voting = $this->getVoteTotals();
 
         if (!is_null($from)) {
             $mv = $this->getUserVote($from);
@@ -255,24 +261,28 @@ class Map
         }
         $sql = "select vote, count(vote) as count from votes where idMap = ? group by vote";
         $res = $this->trs->db->executeQuery($sql, [$this->id], ['string']);
-        $x = [
-            "--" => 0,
-            "++" => 0,
-        ];
+        $x = [];
 
         while ($row = $res->fetchAssociative()) {
-            switch ($row['vote']) {
-                case self::VOTE_UP:
-                    $x['++'] = (int)$row['count'];
-                    break;
-                case self::VOTE_DOWN:
-                    $x['--'] = (int)$row['count'];
-                    break;
-            }
+            $x[$this->constToPretty($row['vote'])] = $row['count'];
         }
 
         $cache[$this->id] = $x;
         return $x;
+    }
+
+    public function constToPretty(int $type): string
+    {
+        return match ($type) {
+
+            self::VOTE_WORST => "---",
+            self::VOTE_WORSE => "--",
+            self::VOTE_BAD => "-",
+            self::VOTE_CENTRIST => "0",
+            self::VOTE_GOOD => "+",
+            self::VOTE_BETTER => "++",
+            self::VOTE_BEST => "+++",
+        };
     }
 
     /**
@@ -284,14 +294,9 @@ class Map
         $res = $this->trs->db->executeQuery($sql, [$this->id, $from->id], ['string', 'string']);
 
         if ($row = $res->fetchAssociative()) {
-            switch ($row['vote']) {
-                case self::VOTE_UP:
-                    return ["++", $row["PB"]];
-                case self::VOTE_DOWN:
-                    return ["--", $row["PB"]];
-            }
+            return [$this->constToPretty($row['vote']), $row['PB']];
         }
-        return ["O", null];
+        return ["0", null];
     }
 
     public function getTMXScreenshot(): ?string
