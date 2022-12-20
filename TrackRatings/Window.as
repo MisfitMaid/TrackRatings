@@ -17,13 +17,9 @@ void Render() {
 	}
 
 	if(windowVisible && map !is null && map.MapInfo.MapUid != "" && app.Editor is null) {
-		if(lockPosition) {
-			UI::SetNextWindowPos(int(anchor.x), int(anchor.y), UI::Cond::Always);
-		} else {
-			UI::SetNextWindowPos(int(anchor.x), int(anchor.y), UI::Cond::FirstUseEver);
-		}
+		UI::SetNextWindowPos(int(anchor.x), int(anchor.y), UI::Cond::FirstUseEver);
 
-		int windowFlags = UI::WindowFlags::NoCollapse | UI::WindowFlags::AlwaysAutoResize | UI::WindowFlags::NoDocking;
+		int windowFlags = UI::WindowFlags::NoCollapse | UI::WindowFlags::AlwaysAutoResize;
 		if (!UI::IsOverlayShown()) {
 				windowFlags |= UI::WindowFlags::NoInputs;
 		}
@@ -51,38 +47,52 @@ void Render() {
 			UI::EndTable();
 		}
 
-		if(UI::BeginTable("table", trDat.votecounts.Length, UI::TableFlags::SizingFixedFit)) {
-			UI::TableNextRow();
+		if(UI::BeginTable("table", 4, UI::TableFlags::SizingFixedFit)) {
+
+            // calc this now for bar graph formatting down below
+		    int biggestVote = 0;
+			for (uint i = 0; i < trDat.votecounts.Length; i++) {
+			    if (trDat.votecounts[i] > biggestVote) biggestVote = trDat.votecounts[i];
+			}
+
+			auto monospace = UI::LoadFont("DroidSansMono.ttf");
 
 			vc votechoice;
 			for (uint i = 0; i < trDat.votecounts.Length; i++) {
+			    UI::TableNextRow();
 			    UI::TableNextColumn();
+			    UI::PushFont(monospace);
 			    if (trDat.yourVote == i) {
 			        if (i < prettyToVote("0")) {
-			            if (UI::RedButton(voteToPretty(i))) { votechoice.choice = i; startnew(castVote, votechoice);  }
+			            if (UI::RedButton(voteToFixedWidthPretty(i))) { votechoice.choice = i; startnew(castVote, votechoice);  }
 			        } else if (i > prettyToVote("0")) {
-			            if (UI::GreenButton(voteToPretty(i))) { votechoice.choice = i; startnew(castVote, votechoice);  }
+			            if (UI::GreenButton(voteToFixedWidthPretty(i))) { votechoice.choice = i; startnew(castVote, votechoice);  }
 			        } else {
-			            if (UI::OrangeButton(voteToPretty(i))) { votechoice.choice = i; startnew(castVote, votechoice);  }
+			            if (UI::OrangeButton(voteToFixedWidthPretty(i))) { votechoice.choice = i; startnew(castVote, votechoice);  }
 			        }
 			    } else {
-			        if (UI::Button(voteToPretty(i))) { votechoice.choice = i; startnew(castVote, votechoice);  }
+			        if (UI::Button(voteToFixedWidthPretty(i))) { votechoice.choice = i; startnew(castVote, votechoice);  }
 			    }
-			}
+			    UI::PopFont();
+    		    UI::TableNextColumn();
+			    UI::Text(trDat.getCountFmt(i));
 
-			if (displayMapCount) {
-				UI::TableNextRow();
-			    for (uint i = 0; i < trDat.votecounts.Length; i++) {
-				    UI::TableNextColumn();
-				    UI::Text(trDat.getCountFmt(i));
-				}
-			}
-			if (displayMapPercent) {
-				UI::TableNextRow();
-			    for (uint i = 0; i < trDat.votecounts.Length; i++) {
-				    UI::TableNextColumn();
-				    UI::Text(trDat.getPercentFmt(i));
-				}
+			    UI::TableNextColumn();
+			    UI::Text(trDat.getPercentFmt(i));
+
+			    UI::TableNextColumn();
+			    if (displayMapPercentChart && trDat.votecounts[i] > 0) {
+			        float barWidth = float(trDat.votecounts[i]) / float(biggestVote) * float(mapPercentChartWidth);
+
+                    if (i < prettyToVote("0")) {
+                        UI::Image(barRed, vec2(barWidth, UI::GetTextLineHeightWithSpacing()));
+                    } else if (i > prettyToVote("0")) {
+                        UI::Image(barGreen, vec2(barWidth, UI::GetTextLineHeightWithSpacing()));
+                    } else {
+                        // this never happens lmao,
+                        UI::Image(barYellow, vec2(barWidth, UI::GetTextLineHeightWithSpacing()));
+                    }
+                }
 			}
 			UI::EndTable();
 		}

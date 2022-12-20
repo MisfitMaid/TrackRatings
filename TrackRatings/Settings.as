@@ -40,6 +40,9 @@ bool displayMapPercent = true;
 [Setting category="Display Settings" name="Show Vote Chart"]
 bool displayMapPercentChart = true;
 
+[Setting category="Display Settings" name="Vote Chart Width" min=1]
+uint mapPercentChartWidth = 50;
+
 [Setting category="Developer Settings" name="Print debug spam"]
 bool debugSpam = false;
 

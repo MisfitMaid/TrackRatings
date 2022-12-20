@@ -17,6 +17,19 @@ string voteToPretty(uint vote) {
     }
 }
 
+string voteToFixedWidthPretty(uint vote) {
+    switch (vote) {
+        case 0: return "---";
+        case 1: return "- -";
+        case 2: return " - ";
+        case 3: return " 0 ";
+        case 4: return " + ";
+        case 5: return "+ +";
+        case 6: return "+++";
+        default: return " 0 ";
+    }
+}
+
 uint prettyToVote(const string &in vote) {
     if (vote == "---") return 0;
     if (vote == "--") return 1;
