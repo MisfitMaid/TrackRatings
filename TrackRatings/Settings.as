@@ -31,19 +31,11 @@ VirtualKey KeyVoteMM;
 [Setting category="Keybind Settings" name="Add --- Rating"]
 VirtualKey KeyVoteMMM;
 
-
-
-[Setting category="Window Settings" name="Window visible" description="To adjust the position of the window, click and drag while the Openplanet overlay is visible."]
+[Setting hidden category="Display Settings" name="Window visible" description="To adjust the position of the window, click and drag while the Openplanet overlay is visible."]
 bool windowVisible = true;
 
-[Setting category="Window Settings" name="Hide on hidden interface"]
-bool hideWithIFace = false;
-
-[Setting category="Window Settings" name="Window position"]
+[Setting hidden category="Display Settings" name="Window position"]
 vec2 anchor = vec2(0, 170);
-
-[Setting category="Window Settings" name="Lock window position" description="Prevents the window moving when click and drag or when the game window changes size."]
-bool lockPosition = false;
 
 [Setting category="Display Settings" name="Show Map Title/Author"]
 bool displayMapName = true;

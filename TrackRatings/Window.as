@@ -32,10 +32,7 @@ void Render() {
 			icon = Icons::StarHalfO;
 		}
 		UI::Begin(icon + " TrackRatings", windowFlags);
-
-		if(!lockPosition) {
-			anchor = UI::GetWindowPos();
-		}
+		anchor = UI::GetWindowPos();
 
 		if(displayMapName) {
 		    UI::BeginGroup();
