@@ -17,7 +17,7 @@ void Render() {
 	}
 
 	if(windowVisible && map !is null && map.MapInfo.MapUid != "" && app.Editor is null) {
-		UI::SetNextWindowPos(int(anchor.x), int(anchor.y), UI::Cond::FirstUseEver);
+		UI::SetNextWindowPos(int(anchor.x), int(anchor.y));
 
 		int windowFlags = UI::WindowFlags::NoCollapse | UI::WindowFlags::AlwaysAutoResize;
 		if (!UI::IsOverlayShown()) {
