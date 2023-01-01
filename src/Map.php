@@ -261,7 +261,7 @@ class Map
         }
         $sql = "select vote, count(vote) as count from votes where idMap = ? group by vote";
         $res = $this->trs->db->executeQuery($sql, [$this->id], ['string']);
-        $x = [];
+        $x = $this->blankVoteArray();
 
         while ($row = $res->fetchAssociative()) {
             $x[$this->constToPretty($row['vote'])] = $row['count'];
@@ -269,6 +269,19 @@ class Map
 
         $cache[$this->id] = $x;
         return $x;
+    }
+
+    protected function blankVoteArray(): array
+    {
+        return [
+            "---" => 0,
+            "--" => 0,
+            "-" => 0,
+            "0" => 0,
+            "+" => 0,
+            "++" => 0,
+            "+++" => 0,
+        ];
     }
 
     public function constToPretty(int $type): string
@@ -297,6 +310,30 @@ class Map
             return [$this->constToPretty($row['vote']), $row['PB']];
         }
         return ["0", null];
+    }
+
+    public function getWeightedRating(): float
+    {
+        $votes = $this->getVoteTotals();
+        if (array_sum($votes) == 0) {
+            return 0.0;
+        }
+
+        $x = 0;
+        $x += ($votes["---"] * -1.5);
+        $x += ($votes["--"] * -1.0);
+        $x += ($votes["-"] * -0.5);
+        $x += ($votes["+"] * 0.5);
+        $x += ($votes["++"] * 1.0);
+        $x += ($votes["+++"] * 1.5);
+
+        return $x / array_sum($votes);
+    }
+
+    public function getTotalVotes(): int
+    {
+        $votes = $this->getVoteTotals();
+        return array_sum($votes);
     }
 
     public function getTMXScreenshot(): ?string
