@@ -16,27 +16,56 @@ SentryClient sentry;
 bool keyHeldDown = false;
 void OnKeyPress(bool down, VirtualKey key)
 {
-    vc votechoice;
-	if(key == KeyToggleUI && !keyHeldDown)
-	{
-		windowVisible = !windowVisible;
-	}
-	if(key == KeyUpvote && !keyHeldDown)
-	{
-	    votechoice.choice = prettyToVote("++");
-		startnew(castVote, votechoice);
-	}
-	if(key == KeyDownvote && !keyHeldDown)
-	{
-	    votechoice.choice = prettyToVote("--");
-		startnew(castVote, votechoice);
-	}
-	if(key == KeyCentrist && !keyHeldDown)
-	{
-	    votechoice.choice = prettyToVote("0");
-		startnew(castVote, votechoice);
-	}
+    if (!keyHeldDown) {
+        vc votechoice;
+        if(key == KeyUpvote && trDat.yourVote < prettyToVote("+++"))
+        {
+            votechoice.choice = trDat.yourVote + 1;
+            startnew(castVote, votechoice);
+        }
+        if(key == KeyDownvote && trDat.yourVote > prettyToVote("---"))
+        {
+            votechoice.choice = trDat.yourVote - 1;
+            startnew(castVote, votechoice);
+        }
+        if(key == KeyCentrist && trDat.yourVote > prettyToVote("0"))
+        {
+            votechoice.choice = prettyToVote("0");
+            startnew(castVote, votechoice);
+        }
 
+        // i feel like there's a better way to do this lmaoo but whatever
+        if(key == KeyVotePPP && trDat.yourVote > prettyToVote("+++"))
+        {
+            votechoice.choice = prettyToVote("+++");
+            startnew(castVote, votechoice);
+        }
+        if(key == KeyVotePP && trDat.yourVote > prettyToVote("++"))
+        {
+            votechoice.choice = prettyToVote("++");
+            startnew(castVote, votechoice);
+        }
+        if(key == KeyVoteP && trDat.yourVote > prettyToVote("+"))
+        {
+            votechoice.choice = prettyToVote("+");
+            startnew(castVote, votechoice);
+        }
+        if(key == KeyVoteM && trDat.yourVote > prettyToVote("-"))
+        {
+            votechoice.choice = prettyToVote("-");
+            startnew(castVote, votechoice);
+        }
+        if(key == KeyVoteMM && trDat.yourVote > prettyToVote("--"))
+        {
+            votechoice.choice = prettyToVote("--");
+            startnew(castVote, votechoice);
+        }
+        if(key == KeyVoteMMM && trDat.yourVote > prettyToVote("---"))
+        {
+            votechoice.choice = prettyToVote("---");
+            startnew(castVote, votechoice);
+        }
+    }
 	keyHeldDown = down;
 }
 

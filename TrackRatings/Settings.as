@@ -4,17 +4,34 @@
  * can be found in the LICENSE file.
  */
 
-[Setting category="Keybind Settings" name="Add ++ Rating"]
-VirtualKey KeyUpvote = VirtualKey(VirtualKey::Add);
-
-[Setting category="Keybind Settings" name="Add -- Rating"]
-VirtualKey KeyDownvote = VirtualKey(VirtualKey::Subtract);
-
 [Setting category="Keybind Settings" name="Clear Rating"]
 VirtualKey KeyCentrist = VirtualKey(VirtualKey::Multiply);
 
-[Setting category="Keybind Settings" name="Toggle UI"]
-VirtualKey KeyToggleUI = VirtualKey(VirtualKey::Divide);
+[Setting category="Keybind Settings" name="Increase Rating"]
+VirtualKey KeyUpvote = VirtualKey(VirtualKey::Add);
+
+[Setting category="Keybind Settings" name="Decrease Rating"]
+VirtualKey KeyDownvote = VirtualKey(VirtualKey::Subtract);
+
+[Setting category="Keybind Settings" name="Add +++ Rating"]
+VirtualKey KeyVotePPP;
+
+[Setting category="Keybind Settings" name="Add ++ Rating"]
+VirtualKey KeyVotePP;
+
+[Setting category="Keybind Settings" name="Add + Rating"]
+VirtualKey KeyVoteP;
+
+[Setting category="Keybind Settings" name="Add - Rating"]
+VirtualKey KeyVoteM;
+
+[Setting category="Keybind Settings" name="Add -- Rating"]
+VirtualKey KeyVoteMM;
+
+[Setting category="Keybind Settings" name="Add --- Rating"]
+VirtualKey KeyVoteMMM;
+
+
 
 [Setting category="Window Settings" name="Window visible" description="To adjust the position of the window, click and drag while the Openplanet overlay is visible."]
 bool windowVisible = true;
