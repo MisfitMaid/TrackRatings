@@ -7,6 +7,7 @@
 UI::Texture@ barRed;
 UI::Texture@ barYellow;
 UI::Texture@ barGreen;
+UI::Texture@ barBlank;
 
 void Render() {
 	auto app = cast<CTrackMania>(GetApp());
@@ -30,7 +31,7 @@ void Render() {
 		} else {
 			icon = Icons::StarHalfO;
 		}
-		UI::Begin(icon + " TrackRatings (beta)", windowFlags);
+		UI::Begin(icon + " TrackRatings", windowFlags);
 
 		if(!lockPosition) {
 			anchor = UI::GetWindowPos();
@@ -95,18 +96,23 @@ void Render() {
 			        UI::Text(trDat.getPercentFmt(i));
 			    }
 
-			    if (displayMapPercentChart && trDat.votecounts[i] > 0) {
+			    if (displayMapPercentChart) {
 			        UI::TableNextColumn();
-			        float barWidth = float(trDat.votecounts[i]) / float(biggestVote) * float(mapPercentChartWidth);
 
-                    if (i < prettyToVote("0")) {
-                        UI::Image(barRed, vec2(barWidth, UI::GetTextLineHeightWithSpacing()));
-                    } else if (i > prettyToVote("0")) {
-                        UI::Image(barGreen, vec2(barWidth, UI::GetTextLineHeightWithSpacing()));
-                    } else {
-                        // this never happens lmao,
-                        UI::Image(barYellow, vec2(barWidth, UI::GetTextLineHeightWithSpacing()));
-                    }
+			        if (trDat.votecounts[i] == 0) {
+                        UI::Image(barBlank, vec2(float(mapPercentChartWidth), UI::GetTextLineHeightWithSpacing())); // this is dumb but
+			        } else {
+                        float barWidth = float(trDat.votecounts[i]) / float(biggestVote) * float(mapPercentChartWidth);
+                        if (i < prettyToVote("0")) {
+                            UI::Image(barRed, vec2(barWidth, UI::GetTextLineHeightWithSpacing()));
+                        } else if (i > prettyToVote("0")) {
+                            UI::Image(barGreen, vec2(barWidth, UI::GetTextLineHeightWithSpacing()));
+                        } else {
+                            // this never happens lmao,
+                            UI::Image(barYellow, vec2(barWidth, UI::GetTextLineHeightWithSpacing()));
+                        }
+			        }
+
                 }
 			}
 			UI::EndTable();
@@ -130,8 +136,10 @@ void loadUITextures() {
     IO::FileSource r = IO::FileSource("img/red.png");
     IO::FileSource y = IO::FileSource("img/yellow.png");
     IO::FileSource g = IO::FileSource("img/green.png");
+    IO::FileSource b = IO::FileSource("img/blank.png");
 
     @barRed = UI::LoadTexture(r.Read(r.Size()));
     @barYellow = UI::LoadTexture(y.Read(y.Size()));
     @barGreen = UI::LoadTexture(g.Read(g.Size()));
+    @barBlank = UI::LoadTexture(b.Read(b.Size()));
 }
