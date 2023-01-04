@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2022 Keira Dueck <sylae@calref.net>
+ * Copyright (c) 2023 Keira Dueck <sylae@calref.net>
  * Use of this source code is governed by the MIT license, which
  * can be found in the LICENSE file.
  */
@@ -264,7 +264,7 @@ class Map
         $x = $this->blankVoteArray();
 
         while ($row = $res->fetchAssociative()) {
-            $x[$this->constToPretty($row['vote'])] = $row['count'];
+            $x[$this->constToPretty($row['vote'])] = (int)$row['count'];
         }
 
         $cache[$this->id] = $x;
