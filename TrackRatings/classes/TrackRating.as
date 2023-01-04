@@ -78,7 +78,7 @@ class TrackRating {
 
 	    for (uint i = 0; i < votecounts.Length; i++) {
 	        try {
-	            votecounts[i] = result["voting"][voteToPretty(i)];
+	            votecounts[i] = Text::ParseUInt(result["voting"][voteToPretty(i)]);
 	        } catch {
 	            votecounts[i] = 0;
 	        }
