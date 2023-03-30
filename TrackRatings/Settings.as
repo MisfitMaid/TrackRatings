@@ -83,14 +83,14 @@ void RenderSettings()
 	}
 
 	if (UI::Button("Report a Bug / Feature Request")) {
-		OpenBrowserURL("https://github.com/sylae/TrackRatings/issues/new");
+		OpenBrowserURL("https://github.com/MisfitMaid/TrackRatings/issues/new");
 	}	
 	
 	UI::TextWrapped("TrackRatings is a free and open-source project to bring map ratings to TrackMania without depending on server plugins or other jank. If you are interested in supporting this project or just want to say hi, please consider taking a look at the below links "+Icons::Heart);
 	
 	UI::Markdown(Icons::Patreon + " [https://patreon.com/MisfitMaid](https://patreon.com/MisfitMaid)");
 	UI::Markdown(Icons::Paypal + " [https://paypal.me/MisfitMaid](https://paypal.me/MisfitMaid)");
-	UI::Markdown(Icons::Github + " [https://github.com/sylae/trackratings](https://github.com/sylae/trackratings)");
+	UI::Markdown(Icons::Github + " [https://github.com/MisfitMaid/trackratings](https://github.com/MisfitMaid/trackratings)");
 	UI::Markdown(Icons::Discord + " [https://discord.gg/BdKpuFcYzG](https://discord.gg/BdKpuFcYzG)");
 	UI::Markdown(Icons::Twitch + " [https://twitch.tv/MisfitMaid](https://twitch.tv/MisfitMaid)");
 }
